@@ -1,0 +1,592 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policies &mdash; Hyperledger Fabric Docs main documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c3038dac" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Peers" href="../peers/peers.html" />
+    <link rel="prev" title="Membership Service Provider (MSP)" href="../membership/membership.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="hyperledger-fabric" /><meta name="readthedocs-version-slug" content="release-2.5" /><meta name="readthedocs-resolver-filename" content="/policies/policies.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hyperledger Fabric Docs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+<br><img style="background-color: #fff; height: unset; width: unset;" alt="Hyperledger Fabric" src=../_images/hyperledger_fabric_logo_color.png />
+<br>
+<a href="https://github.com/hyperledger/fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="GitHub" src="../_static/images/github_button.png"/></a>
+&nbsp;<a href="https://stackoverflow.com/questions/tagged/hyperledger-fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="StackOverflow" src="../_static/images/stackoverflow_button.png"/></a>
+&nbsp;<a href="https://discord.com/invite/hyperledger"><img style="padding: 0px; margin: auto auto auto auto;" alt="Discord" src="../_static/images/discord_button.png"/></a>
+&nbsp;<a href="https://www.youtube.com/playlist?list=PL0MZ85B_96CH7wvtrRzV7SvtRY0sI0DEg"><img style="padding: 0px; margin: auto auto auto auto;" alt="Youtube Channel" src="../_static/images/youtube_button.png"/></a>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../whatis.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html">What’s new in Hyperledger Fabric v2.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html#release-notes">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../key_concepts.html">Key Concepts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../blockchain.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fabric_model.html">Hyperledger Fabric Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/network.html">How Fabric networks are structured</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../identity/identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../membership/membership.html">Membership Service Provider (MSP)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Policies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-a-policy">What is a policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-are-policies-needed">Why are policies needed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-are-policies-implemented">How are policies implemented</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#access-control-lists-acls">Access control lists (ACLs)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smart-contract-endorsement-policies">Smart contract endorsement policies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modification-policies">Modification policies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-you-write-a-policy-in-fabric">How do you write a policy in Fabric</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#signature-policies">Signature policies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implicitmeta-policies">ImplicitMeta policies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#an-example-channel-configuration-policy">An example: channel configuration policy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#member-organizations-section">Member Organizations Section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#application-and-roles-section">Application and Roles Section</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fabric-chaincode-lifecycle">Fabric chaincode lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chaincode-endorsement-policies">Chaincode endorsement policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overriding-policy-definitions">Overriding policy definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../peers/peers.html">Peers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ledger/ledger.html">Ledger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../orderer/ordering_service.html">The Ordering Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smartcontract/smartcontract.html">Smart Contracts and Chaincode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chaincode_lifecycle.html">Fabric chaincode lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../private-data/private-data.html">Private data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../capabilities_concept.html">Channel capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../security_model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usecases.html">Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started - Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started_run_fabric.html">Getting Started - Run Fabric</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment_guide_overview.html">Deploying a production network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ops_guide.html">Operations Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../upgrade.html">Upgrading to the latest release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../command_ref.html">Commands Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Fabric-FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributions Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../questions.html">Still Have Questions?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../status.html">Status</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hyperledger Fabric Docs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../key_concepts.html">Key Concepts</a></li>
+      <li class="breadcrumb-item active">Policies</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/policies/policies.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="policies">
+<h1>Policies<a class="headerlink" href="#policies" title="Link to this heading">¶</a></h1>
+<p><strong>Audience</strong>: Architects, application and smart contract developers,
+administrators</p>
+<p>In this topic, we’ll cover:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#what-is-a-policy">What is a policy</a></p></li>
+<li><p><a class="reference external" href="#why-are-policies-needed">Why are policies needed</a></p></li>
+<li><p><a class="reference external" href="#how-are-policies-implemented">How are policies implemented</a></p></li>
+<li><p><a class="reference external" href="#how-do-you-write-a-policy-in-fabric">How do you write a policy in Fabric</a></p></li>
+<li><p><a class="reference external" href="#fabric-chaincode-lifecycle">Fabric chaincode lifecycle</a></p></li>
+<li><p><a class="reference external" href="#overriding-policy-definitions">Overriding policy definitions</a></p></li>
+</ul>
+<p>Note: this topic describes a network that does not use a “system channel”, a channel that the ordering service is bootstrapped with and the ordering service exclusively controls. Since the release of v2.3, using system channel is now considered the legacy process as compared to the process to <a class="reference external" href="../create_channel/create_channel_participation.html">Create a channel</a> without a system channel. For a version of this topic that includes information about the system channel, check out <a class="reference external" href="https://hyperledger-fabric.readthedocs.io/en/release-2.2/policies/policies.html">Policies</a> from the v2.2 documentation.</p>
+<section id="what-is-a-policy">
+<h2>What is a policy<a class="headerlink" href="#what-is-a-policy" title="Link to this heading">¶</a></h2>
+<p>At its most basic level, a policy is a set of rules that define the structure
+for how decisions are made and specific outcomes are reached. To that end,
+policies typically describe a <strong>who</strong> and a <strong>what</strong>, such as the access or
+rights that an individual has over an <strong>asset</strong>. We can see that policies are
+used throughout our daily lives to protect assets of value to us, from car
+rentals, health, our homes, and many more.</p>
+<p>For example, an insurance policy defines the conditions, terms, limits, and
+expiration under which an insurance payout will be made. The policy is
+agreed to by the policy holder and the insurance company, and defines the rights
+and responsibilities of each party.</p>
+<p>Whereas an insurance policy is put in place for risk management, in Hyperledger
+Fabric, policies are the mechanism for infrastructure management. Fabric policies
+represent how members come to agreement on accepting or rejecting changes to the
+network, a channel, or a smart contract. Policies are agreed to by the channel
+members when the channel is originally configured, but they can also be modified
+as the channel evolves. For example, they describe the criteria for adding or
+removing members from a channel, change how blocks are formed, or specify the
+number of organizations required to endorse a smart contract. All of these
+actions are described by a policy which defines who can perform the action.
+Simply put, everything you want to do on a Fabric network is controlled by a
+policy.</p>
+</section>
+<section id="why-are-policies-needed">
+<h2>Why are policies needed<a class="headerlink" href="#why-are-policies-needed" title="Link to this heading">¶</a></h2>
+<p>Policies are one of the things that make Hyperledger Fabric different from other
+blockchains like Ethereum or Bitcoin. In those systems, transactions can be
+generated and validated by any node in the network. The policies that govern the
+network are fixed at any point in time and can only be changed using the same
+process that governs the code. Because Fabric is a permissioned blockchain whose
+users are recognized by the underlying infrastructure, those users have the
+ability to decide on the governance of the network before it is launched, and
+change the governance of a running network.</p>
+<p>Policies allow members to decide which organizations can access or update a Fabric
+network, and provide the mechanism to enforce those decisions. Policies contain
+the lists of organizations that have access to a given resource, such as a
+user or system chaincode. They also specify how many organizations need to agree
+on a proposal to update a resource, such as a channel or smart contracts. Once
+they are written, policies evaluate the collection of signatures attached to
+transactions and proposals and validate if the signatures fulfill the governance
+agreed to by the network.</p>
+</section>
+<section id="how-are-policies-implemented">
+<h2>How are policies implemented<a class="headerlink" href="#how-are-policies-implemented" title="Link to this heading">¶</a></h2>
+<p>Policies are defined within the relevant administrative domain of a particular action defined by the policy. For example, the policy for adding a peer organization to a channel is defined within the administrative domain of the peer organizations (known as the <code class="docutils literal notranslate"><span class="pre">Application</span></code> group). Similarly, adding ordering nodes in the consenter set of the channel is controlled by a policy inside the <code class="docutils literal notranslate"><span class="pre">Orderer</span></code> group. Actions that cross both the peer and orderer organizational domains are contained in the <code class="docutils literal notranslate"><span class="pre">Channel</span></code> group.</p>
+<p>Typically, these policies default to the “majority of admins” of the group they fall under (a majority of peer organization admins for example, or in the case of <code class="docutils literal notranslate"><span class="pre">Channel</span></code> policies, a majority of both peer organizations and orderer organizations), though they can be specified to any rule a user wishes to define. Check out <a class="reference external" href="#signature-policies">Signature policies</a> for more information.</p>
+<section id="access-control-lists-acls">
+<h3>Access control lists (ACLs)<a class="headerlink" href="#access-control-lists-acls" title="Link to this heading">¶</a></h3>
+<p>Network administrators will be especially interested in the Fabric use of ACLs,
+which provide the ability to configure access to resources by associating those
+resources with existing policies. These “resources” could be functions on system
+chaincode (e.g., “GetBlockByNumber” on the “qscc” system chaincode) or other
+resources (e.g.,who can receive Block events). ACLs refer to policies
+defined in an application channel configuration and extends them to control
+additional resources. The default set of Fabric ACLs is visible in the
+<code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file under the <code class="docutils literal notranslate"><span class="pre">Application:</span> <span class="pre">&amp;ApplicationDefaults</span></code> section but
+they can and should be overridden in a production environment. The list of
+resources named in <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> is the complete set of all internal resources
+currently defined by Fabric.</p>
+<p>In that file, ACLs are expressed using the following format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ACL policy for chaincode to chaincode invocation</span>
+<span class="n">peer</span><span class="o">/</span><span class="n">ChaincodeToChaincode</span><span class="p">:</span> <span class="o">/</span><span class="n">Channel</span><span class="o">/</span><span class="n">Application</span><span class="o">/</span><span class="n">Writers</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">peer/ChaincodeToChaincode</span></code> represents the resource being secured and
+<code class="docutils literal notranslate"><span class="pre">/Channel/Application/Writers</span></code> refers to the policy which must be satisfied for
+the associated transaction to be considered valid.</p>
+<p>For a deeper dive into ACLS, refer to the topic in the Operations Guide on <a class="reference external" href="../access_control.html">ACLs</a>.</p>
+</section>
+<section id="smart-contract-endorsement-policies">
+<h3>Smart contract endorsement policies<a class="headerlink" href="#smart-contract-endorsement-policies" title="Link to this heading">¶</a></h3>
+<p>Every smart contract inside a chaincode package has an endorsement policy that
+specifies how many peers belonging to different channel members need to execute
+and validate a transaction against a given smart contract in order for the
+transaction to be considered valid. Hence, the endorsement policies define the
+organizations (through their peers) who must “endorse” (i.e., approve of) the
+execution of a proposal.</p>
+</section>
+<section id="modification-policies">
+<h3>Modification policies<a class="headerlink" href="#modification-policies" title="Link to this heading">¶</a></h3>
+<p>There is one last type of policy that is crucial to how policies work in Fabric,
+the <code class="docutils literal notranslate"><span class="pre">Modification</span> <span class="pre">policy</span></code>. Modification policies specify the group of identities
+required to sign (approve) any configuration <em>update</em>. It is the policy that
+defines how the policy is updated. Thus, each channel configuration element
+includes a reference to a policy which governs its modification.</p>
+</section>
+</section>
+<section id="how-do-you-write-a-policy-in-fabric">
+<h2>How do you write a policy in Fabric<a class="headerlink" href="#how-do-you-write-a-policy-in-fabric" title="Link to this heading">¶</a></h2>
+<p>If you want to change anything in Fabric, the policy associated with the resource
+describes <strong>who</strong> needs to approve it, either with an explicit sign off from
+individuals, or an implicit sign off by a group. In the insurance domain, an
+explicit sign off could be a single member of the homeowners insurance agents
+group. And an implicit sign off would be analogous to requiring approval from a
+majority of the managerial members of the homeowners insurance group. This is
+particularly useful because the members of that group can change over time
+without requiring that the policy be updated. In Hyperledger Fabric, explicit
+sign offs in policies are expressed using the <code class="docutils literal notranslate"><span class="pre">Signature</span></code> syntax and implicit
+sign offs use the <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> syntax.</p>
+<section id="signature-policies">
+<h3>Signature policies<a class="headerlink" href="#signature-policies" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Signature</span></code> policies define specific types of users who must sign in order for a
+policy to be satisfied such as <code class="docutils literal notranslate"><span class="pre">OR('Org1.peer',</span> <span class="pre">'Org2.peer')</span></code>. These policies are
+considered the most versatile because they allow for the construction of
+extremely specific rules like: “An admin of org A and 2 other admins, or 5 of 6
+organization admins”. The syntax supports arbitrary combinations of <code class="docutils literal notranslate"><span class="pre">AND</span></code>, <code class="docutils literal notranslate"><span class="pre">OR</span></code>
+and <code class="docutils literal notranslate"><span class="pre">NOutOf</span></code>. For example, a policy can be easily expressed by using
+<code class="docutils literal notranslate"><span class="pre">AND('Org1.member',</span> <span class="pre">'Org2.member')</span></code> which means that a signature from at least
+one member in Org1 AND one member in Org2 is required for the policy to be satisfied.</p>
+</section>
+<section id="implicitmeta-policies">
+<h3>ImplicitMeta policies<a class="headerlink" href="#implicitmeta-policies" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policies are only valid in the context of channel configuration
+which is based on a tiered hierarchy of policies in a configuration tree. ImplicitMeta
+policies aggregate the result of policies deeper in the configuration tree that
+are ultimately defined by Signature policies. They are <code class="docutils literal notranslate"><span class="pre">Implicit</span></code> because they
+are constructed implicitly based on the current organizations in the
+channel configuration, and they are <code class="docutils literal notranslate"><span class="pre">Meta</span></code> because their evaluation is not
+against specific MSP principals, but rather against other sub-policies below
+them in the configuration tree.</p>
+<p>The following diagram illustrates the tiered policy structure for an application
+channel and shows how the <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> channel configuration admins policy,
+named <code class="docutils literal notranslate"><span class="pre">/Channel/Admins</span></code>, is resolved when the sub-policies named <code class="docutils literal notranslate"><span class="pre">Admins</span></code> below it
+in the configuration hierarchy are satisfied where each check mark represents that
+the conditions of the sub-policy were satisfied.</p>
+<p><img alt="policies.policies" src="../_images/FabricPolicyHierarchy-6.png" /></p>
+<p>As you can see in the diagram above, <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policies, Type = 3, use a
+different syntax, <code class="docutils literal notranslate"><span class="pre">&quot;&lt;ANY|ALL|MAJORITY&gt;</span> <span class="pre">&lt;SubPolicyName&gt;&quot;</span></code>, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`MAJORITY sub policy: Admins`
+</pre></div>
+</div>
+<p>The diagram shows a sub-policy <code class="docutils literal notranslate"><span class="pre">Admins</span></code>, which refers to all the <code class="docutils literal notranslate"><span class="pre">Admins</span></code> policy
+below it in the configuration tree. You can create your own sub-policies
+and name them whatever you want and then define them in each of your
+organizations.</p>
+<p>As mentioned above, a key benefit of an <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policy such as <code class="docutils literal notranslate"><span class="pre">MAJORITY</span> <span class="pre">Admins</span></code> is that when you add a new admin organization to the channel, you do not
+have to update the channel policy. Therefore <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policies are
+considered to be more flexible as organizations are added. Recall that <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policies ultimately resolve the
+<code class="docutils literal notranslate"><span class="pre">Signature</span></code> sub-policies underneath them in the configuration tree as the
+diagram shows.</p>
+<p>You can also define an application level implicit policy to operate across
+organizations, in a channel for example, and either require that ANY of them
+are satisfied, that ALL are satisfied, or that a MAJORITY are satisfied. This
+format lends itself to much better, more natural defaults, so that each
+organization can decide what it means for a valid endorsement.</p>
+<p>Further granularity and control can be achieved if you include <a class="reference external" href="../msp.html#organizational-units">NodeOUs</a> in your
+organization definition. Organization Units (OUs) are defined in the Fabric CA
+client configuration file and can be associated with an identity when it is
+created. In Fabric, <code class="docutils literal notranslate"><span class="pre">NodeOUs</span></code> provide a way to classify identities in a digital
+certificate hierarchy. For instance, an organization having specific <code class="docutils literal notranslate"><span class="pre">NodeOUs</span></code>
+enabled could require that a ‘peer’ sign for it to be a valid endorsement,
+whereas an organization without any might simply require that any member can
+sign.</p>
+</section>
+</section>
+<section id="an-example-channel-configuration-policy">
+<h2>An example: channel configuration policy<a class="headerlink" href="#an-example-channel-configuration-policy" title="Link to this heading">¶</a></h2>
+<p>Understanding policies begins with examining the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> where the
+channel policies are defined. We can use the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file in the Fabric
+test network to see examples of both policy syntax types. We are going to examine
+the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file used by the <a class="reference external" href="https://github.com/hyperledger/fabric-samples/blob/main/test-network/configtx/configtx.yaml">fabric-samples/test-network</a> sample.</p>
+<section id="member-organizations-section">
+<h3>Member Organizations Section<a class="headerlink" href="#member-organizations-section" title="Link to this heading">¶</a></h3>
+<p>The first section of the file defines the organizations that will be members of the channel. Inside each
+organization definition are the default policies for that organization, <code class="docutils literal notranslate"><span class="pre">Readers</span></code>, <code class="docutils literal notranslate"><span class="pre">Writers</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Admins</span></code>, and <code class="docutils literal notranslate"><span class="pre">Endorsement</span></code>, although you can name your policies anything you want.
+Each policy has a <code class="docutils literal notranslate"><span class="pre">Type</span></code> which describes how the policy is expressed (<code class="docutils literal notranslate"><span class="pre">Signature</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code>) and a <code class="docutils literal notranslate"><span class="pre">Rule</span></code>.</p>
+<p>The test network example below shows the Org1 organization definition in the
+channel, where the policy <code class="docutils literal notranslate"><span class="pre">Type</span></code> is <code class="docutils literal notranslate"><span class="pre">Signature</span></code> and the <code class="docutils literal notranslate"><span class="pre">Endorsement:</span></code> policy rule
+is defined as <code class="docutils literal notranslate"><span class="pre">&quot;OR('Org1MSP.peer')&quot;</span></code>. This policy specifies that a peer that is
+a member of <code class="docutils literal notranslate"><span class="pre">Org1MSP</span></code> is required to sign. It is these signature policies that
+become the sub-policies that the <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policies point to.</p>
+<details>
+  <summary>
+    <strong>Click here to see an example of an organization defined with signature policies</strong>
+  </summary>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="o">&amp;</span><span class="n">Org1</span>
+     <span class="c1"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+     <span class="c1"># of the fabric.git development environment</span>
+     <span class="n">Name</span><span class="p">:</span> <span class="n">Org1MSP</span>
+
+     <span class="c1"># ID to load the MSP definition as</span>
+     <span class="n">ID</span><span class="p">:</span> <span class="n">Org1MSP</span>
+
+     <span class="n">MSPDir</span><span class="p">:</span> <span class="o">../</span><span class="n">organizations</span><span class="o">/</span><span class="n">peerOrganizations</span><span class="o">/</span><span class="n">org1</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">msp</span>
+
+     <span class="c1"># Policies defines the set of policies at this level of the config tree</span>
+     <span class="c1"># For organization policies, their canonical path is usually</span>
+     <span class="c1">#   /Channel/&lt;Application|Orderer&gt;/&lt;OrgName&gt;/&lt;PolicyName&gt;</span>
+     <span class="n">Policies</span><span class="p">:</span>
+         <span class="n">Readers</span><span class="p">:</span>
+             <span class="n">Type</span><span class="p">:</span> <span class="n">Signature</span>
+             <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;OR(&#39;Org1MSP.admin&#39;, &#39;Org1MSP.peer&#39;, &#39;Org1MSP.client&#39;)&quot;</span>
+         <span class="n">Writers</span><span class="p">:</span>
+             <span class="n">Type</span><span class="p">:</span> <span class="n">Signature</span>
+             <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;OR(&#39;Org1MSP.admin&#39;, &#39;Org1MSP.client&#39;)&quot;</span>
+         <span class="n">Admins</span><span class="p">:</span>
+             <span class="n">Type</span><span class="p">:</span> <span class="n">Signature</span>
+             <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;OR(&#39;Org1MSP.admin&#39;)&quot;</span>
+         <span class="n">Endorsement</span><span class="p">:</span>
+             <span class="n">Type</span><span class="p">:</span> <span class="n">Signature</span>
+             <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;OR(&#39;Org1MSP.peer&#39;)&quot;</span>
+</pre></div>
+</div>
+</details>
+</section>
+<section id="application-and-roles-section">
+<h3>Application and Roles Section<a class="headerlink" href="#application-and-roles-section" title="Link to this heading">¶</a></h3>
+<p>The next example shows the <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code> policy type used in the <code class="docutils literal notranslate"><span class="pre">Application</span></code>
+section of the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code>. These set of policies lie on the
+<code class="docutils literal notranslate"><span class="pre">/Channel/Application/</span></code> path. If you use the default set of Fabric ACLs, these
+policies define the behavior of many important features of application channels,
+such as who can query the channel ledger, invoke a chaincode, or update a channel
+config. These policies point to the sub-policies defined for each organization.
+The Org1 defined in the section above contains <code class="docutils literal notranslate"><span class="pre">Reader</span></code>, <code class="docutils literal notranslate"><span class="pre">Writer</span></code>, and <code class="docutils literal notranslate"><span class="pre">Admin</span></code>
+sub-policies that are evaluated by the <code class="docutils literal notranslate"><span class="pre">Reader</span></code>, <code class="docutils literal notranslate"><span class="pre">Writer</span></code>, and <code class="docutils literal notranslate"><span class="pre">Admin</span></code> <code class="docutils literal notranslate"><span class="pre">ImplicitMeta</span></code>
+policies in the <code class="docutils literal notranslate"><span class="pre">Application</span></code> section. Because the test network is built with the
+default policies, you can use the example Org1 to query the channel ledger, invoke a
+chaincode, and approve channel updates for any test network channel that you
+create.</p>
+<details>
+  <summary>
+    <strong>Click here to see an example of ImplicitMeta policies</strong>
+  </summary>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">################################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#   SECTION: Application</span>
+<span class="c1">#</span>
+<span class="c1">#   - This section defines the values to encode into a config transaction or</span>
+<span class="c1">#   genesis block for application related parameters</span>
+<span class="c1">#</span>
+<span class="c1">################################################################################</span>
+<span class="n">Application</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">ApplicationDefaults</span>
+
+    <span class="c1"># Organizations is the list of orgs which are defined as participants on</span>
+    <span class="c1"># the application side of the network</span>
+    <span class="n">Organizations</span><span class="p">:</span>
+
+    <span class="c1"># Policies defines the set of policies at this level of the config tree</span>
+    <span class="c1"># For Application policies, their canonical path is</span>
+    <span class="c1">#   /Channel/Application/&lt;PolicyName&gt;</span>
+    <span class="n">Policies</span><span class="p">:</span>
+        <span class="n">Readers</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;ANY Readers&quot;</span>
+        <span class="n">Writers</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;ANY Writers&quot;</span>
+        <span class="n">Admins</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Admins&quot;</span>
+        <span class="n">LifecycleEndorsement</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Endorsement&quot;</span>
+        <span class="n">Endorsement</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Endorsement&quot;</span>
+</pre></div>
+</div>
+</details>
+</section>
+</section>
+<section id="fabric-chaincode-lifecycle">
+<h2>Fabric chaincode lifecycle<a class="headerlink" href="#fabric-chaincode-lifecycle" title="Link to this heading">¶</a></h2>
+<p>In the Fabric 2.0 release, a new chaincode lifecycle process was introduced,
+whereby a more democratic process is used to govern chaincode on the network.
+The new process allows multiple organizations to vote on how a chaincode will
+be operated before it can be used on a channel. This is significant because it is
+the combination of this new lifecycle process and the policies that are
+specified during that process that dictate the security across the network. More details on
+the flow are available in the <a class="reference external" href="../chaincode_lifecycle.html">Fabric chaincode lifecycle</a>
+concept topic, but for purposes of this topic you should understand how policies are
+used in this flow. The new flow includes two steps where policies are specified:
+when chaincode is <strong>approved</strong> by organization members, and when it is <strong>committed</strong>
+to the channel.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Application</span></code> section of  the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file includes the default
+chaincode lifecycle endorsement policy. In a production environment you would
+customize this definition for your own use case.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">################################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#   SECTION: Application</span>
+<span class="c1">#</span>
+<span class="c1">#   - This section defines the values to encode into a config transaction or</span>
+<span class="c1">#   genesis block for application related parameters</span>
+<span class="c1">#</span>
+<span class="c1">################################################################################</span>
+<span class="n">Application</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">ApplicationDefaults</span>
+
+    <span class="c1"># Organizations is the list of orgs which are defined as participants on</span>
+    <span class="c1"># the application side of the network</span>
+    <span class="n">Organizations</span><span class="p">:</span>
+
+    <span class="c1"># Policies defines the set of policies at this level of the config tree</span>
+    <span class="c1"># For Application policies, their canonical path is</span>
+    <span class="c1">#   /Channel/Application/&lt;PolicyName&gt;</span>
+    <span class="n">Policies</span><span class="p">:</span>
+        <span class="n">Readers</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;ANY Readers&quot;</span>
+        <span class="n">Writers</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;ANY Writers&quot;</span>
+        <span class="n">Admins</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Admins&quot;</span>
+        <span class="n">LifecycleEndorsement</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Endorsement&quot;</span>
+        <span class="n">Endorsement</span><span class="p">:</span>
+            <span class="n">Type</span><span class="p">:</span> <span class="n">ImplicitMeta</span>
+            <span class="n">Rule</span><span class="p">:</span> <span class="s2">&quot;MAJORITY Endorsement&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">LifecycleEndorsement</span></code> policy governs who needs to <em>approve a chaincode
+definition</em>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Endorsement</span></code> policy is the <em>default endorsement policy for
+a chaincode</em>. More on this below.</p></li>
+</ul>
+</section>
+<section id="chaincode-endorsement-policies">
+<h2>Chaincode endorsement policies<a class="headerlink" href="#chaincode-endorsement-policies" title="Link to this heading">¶</a></h2>
+<p>The endorsement policy is specified for a <strong>chaincode</strong> when it is approved
+and committed to the channel using the Fabric chaincode lifecycle (that is, one
+endorsement policy covers all of the state associated with a chaincode). The
+endorsement policy can be specified either by reference to an endorsement policy
+defined in the channel configuration or by explicitly specifying a Signature policy.</p>
+<p>If an endorsement policy is not explicitly specified during the approval step,
+the default <code class="docutils literal notranslate"><span class="pre">Endorsement</span></code> policy <code class="docutils literal notranslate"><span class="pre">&quot;MAJORITY</span> <span class="pre">Endorsement&quot;</span></code> is used which means
+that a majority of the peers belonging to the different channel members
+(organizations) need to execute and validate a transaction against the chaincode
+in order for the transaction to be considered valid. This default policy allows
+organizations that join the channel to become automatically added to the chaincode
+endorsement policy. If you don’t want to use the default endorsement
+policy, use the Signature policy format to specify a more complex endorsement
+policy (such as requiring that a chaincode be endorsed by one organization, and
+then one of the other organizations on the channel).</p>
+<p>Signature policies also allow you to include <code class="docutils literal notranslate"><span class="pre">principals</span></code> which are simply a way
+of matching an identity to a role. Principals are just like user IDs or group
+IDs, but they are more versatile because they can include a wide range of
+properties of an actor’s identity, such as the actor’s organization,
+organizational unit, role or even the actor’s specific identity. When we talk
+about principals, they are the properties which determine their permissions.
+Principals are described as <code class="docutils literal notranslate"><span class="pre">'MSP.ROLE'</span></code>, where <code class="docutils literal notranslate"><span class="pre">MSP</span></code> represents the required MSP
+ID (the organization), and <code class="docutils literal notranslate"><span class="pre">ROLE</span></code> represents one of the four accepted roles:
+Member, Admin, Client, and Peer. A role is associated to an identity when a user
+enrolls with a CA. You can customize the list of roles available on your Fabric
+CA.</p>
+<p>Some examples of valid principals are:</p>
+<ul class="simple">
+<li><p>‘Org0.Admin’: an administrator of the Org0 MSP</p></li>
+<li><p>‘Org1.Member’: a member of the Org1 MSP</p></li>
+<li><p>‘Org1.Client’: a client of the Org1 MSP</p></li>
+<li><p>‘Org1.Peer’: a peer of the Org1 MSP</p></li>
+<li><p>‘OrdererOrg.Orderer’: an orderer in the OrdererOrg MSP</p></li>
+</ul>
+<p>There are cases where it may be necessary for a particular state
+(a particular key-value pair, in other words) to have a different endorsement
+policy. This <strong>state-based endorsement</strong> allows the default chaincode-level
+endorsement policies to be overridden by a different policy for the specified
+keys.</p>
+<p>For a deeper dive on how to write an endorsement policy refer to the topic on
+<a class="reference external" href="../endorsement-policies.html">Endorsement policies</a> in the Operations Guide.</p>
+<p><strong>Note:</strong>  Policies work differently depending on which version of Fabric you are
+using:</p>
+<ul class="simple">
+<li><p>In Fabric releases prior to 2.0, chaincode endorsement policies can be
+updated during chaincode instantiation or by using the chaincode lifecycle
+commands. If not specified at instantiation time, the endorsement policy
+defaults to “any member of the organizations in the channel”. For example,
+a channel with “Org1” and “Org2” would have a default endorsement policy of
+“OR(‘Org1.member’, ‘Org2.member’)”.</p></li>
+<li><p>Starting with Fabric 2.0, Fabric introduced a new chaincode
+lifecycle process that allows multiple organizations to agree on how a
+chaincode will be operated before it can be used on a channel.  The new process
+requires that organizations agree to the parameters that define a chaincode,
+such as name, version, and the chaincode endorsement policy.</p></li>
+</ul>
+</section>
+<section id="overriding-policy-definitions">
+<h2>Overriding policy definitions<a class="headerlink" href="#overriding-policy-definitions" title="Link to this heading">¶</a></h2>
+<p>Hyperledger Fabric includes default policies which are useful for getting started,
+developing, and testing your blockchain, but they are meant to be customized
+in a production environment. You should be aware of the default policies
+in the <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file. Channel configuration policies can be extended
+with arbitrary verbs, beyond the default <code class="docutils literal notranslate"><span class="pre">Readers,</span> <span class="pre">Writers,</span> <span class="pre">Admins</span></code> in
+<code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code>.</p>
+<p>For more information on overriding policy definitions when creating a channel, check out <a class="reference external" href="../create_channel/channel_policies.html">Channel policies</a> and <a class="reference external" href="../create_channel/create_channel_participation.html">Creating a channel without a system channel</a>.</p>
+<p>For information about how to update a channel, check out <a class="reference external" href="../config_update.html#updating-a-channel-configuration">Updating a channel configuration</a> for more information.</p>
+<!--- Licensed under Creative Commons Attribution 4.0 International License
+https://creativecommons.org/licenses/by/4.0/) -->
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../peers/peers.html" class="btn btn-neutral float-right" title="Peers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../membership/membership.html" class="btn btn-neutral" title="Membership Service Provider (MSP)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Hyperledger 2020-2023.
+    <br>
+      <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+        <img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

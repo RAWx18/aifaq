@@ -6,8 +6,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 def embedding_function():
     config_data = load_yaml_file("config.yaml")
 
-    # check if GPU is available, else use CPU
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Force CPU usage to avoid CUDA out of memory errors
+    device = torch.device("cpu")
 
     model_name = config_data["embedding_model_name"]
     model_kwargs = {"device": device}

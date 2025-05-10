@@ -8,5 +8,14 @@ accelerate
 uvicorn
 black
 sse-starlette
-langchain
+nltk>=3.8
+spacy>=3.6.0
+python-dotenv
+fastapi
+pydantic
 uuid
+transformers>=4.34.0
+torch>=2.0.0
+numpy>=1.24.0
+# NLP model downloads
+spacy-model-en_core_web_sm

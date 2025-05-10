@@ -1,12 +1,14 @@
 import React from 'react';
 import { IconHyperledger } from './icons/IconHyperledger';
 import ChatResponseOptions from './chat-response-options';
+import MultiAgentInfo from './multi-agent-info';
+import { Message } from '@/lib/types';
 
 interface Props {
-	response: string;
+	message: Message;
 }
 
-const ChatResponse = ({ response }: Props) => (
+const ChatResponse = ({ message }: Props) => (
 	<div className="flex flex-row space-x-4 p-4">
 		<div className="h-10 w-10 rounded-full border shrink-0 p-2 bg-background">
 			<IconHyperledger />
@@ -14,10 +16,11 @@ const ChatResponse = ({ response }: Props) => (
 
 		<div className="flex flex-col">
 			<div className="w-fit p-2">
-				<p> {response} </p>
+				<p> {message.content} </p>
 			</div>
 			<div className="mt-4">
-				<ChatResponseOptions text={response} />
+				<ChatResponseOptions text={message.content} />
+				{message.metadata && <MultiAgentInfo metadata={message.metadata} />}
 			</div>
 		</div>
 	</div>

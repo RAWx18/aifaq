@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 7,
+    "success_rate": 1.0,
+    "avg_duration": 0.041032428571428574,
+    "timestamp": "20250511_013622",
+    "mode": "mock"
+  },
+  "results": [
+    {
+      "test_name": "Basic definition query",
+      "query": "What is Hyperledger Fabric?",
+      "success": true,
+      "query_type": "definitional",
+      "expected_query_type": "definitional",
+      "doc_count": 3,
+      "min_doc_count": 1,
+      "response_length": 46,
+      "duration": 0.171417,
+      "error": null
+    },
+    {
+      "test_name": "How-to query",
+      "query": "How do I install Hyperledger Fabric?",
+      "success": true,
+      "query_type": "procedural",
+      "expected_query_type": "procedural",
+      "doc_count": 3,
+      "min_doc_count": 1,
+      "response_length": 55,
+      "duration": 0.004326,
+      "error": null
+    },
+    {
+      "test_name": "Comparison query",
+      "query": "How does Hyperledger Fabric compare to Ethereum?",
+      "success": true,
+      "query_type": "comparative",
+      "expected_query_type": "comparative",
+      "doc_count": 3,
+      "min_doc_count": 2,
+      "response_length": 67,
+      "duration": 0.088078,
+      "error": null
+    },
+    {
+      "test_name": "Conceptual query",
+      "query": "Explain the endorsement process in Hyperledger Fabric",
+      "success": true,
+      "query_type": "explanatory",
+      "expected_query_type": "explanatory",
+      "doc_count": 3,
+      "min_doc_count": 1,
+      "response_length": 72,
+      "duration": 0.004246,
+      "error": null
+    },
+    {
+      "test_name": "Unknown topic query",
+      "query": "What is the theory of relativity?",
+      "success": true,
+      "query_type": "definitional",
+      "expected_query_type": null,
+      "doc_count": 3,
+      "min_doc_count": 0,
+      "response_length": 52,
+      "duration": 0.004625,
+      "error": null
+    },
+    {
+      "test_name": "Malformed query",
+      "query": "hlf?????",
+      "success": true,
+      "query_type": "general",
+      "expected_query_type": null,
+      "doc_count": 3,
+      "min_doc_count": 0,
+      "response_length": 27,
+      "duration": 0.008032,
+      "error": null
+    },
+    {
+      "test_name": "Multi-part query",
+      "query": "What are channels in Hyperledger Fabric and how are they used?",
+      "success": true,
+      "query_type": "explanatory",
+      "expected_query_type": null,
+      "doc_count": 3,
+      "min_doc_count": 1,
+      "response_length": 81,
+      "duration": 0.006503,
+      "error": null
+    }
+  ]
+}

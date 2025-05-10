@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secured asset transfer in Fabric &mdash; Hyperledger Fabric Docs main documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c3038dac" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using CouchDB" href="../couchdb_tutorial.html" />
+    <link rel="prev" title="Using Private Data in Fabric" href="../private_data_tutorial.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="hyperledger-fabric" /><meta name="readthedocs-version-slug" content="release-2.5" /><meta name="readthedocs-resolver-filename" content="/secured_asset_transfer/secured_private_asset_transfer_tutorial.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hyperledger Fabric Docs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+<br><img style="background-color: #fff; height: unset; width: unset;" alt="Hyperledger Fabric" src=../_images/hyperledger_fabric_logo_color.png />
+<br>
+<a href="https://github.com/hyperledger/fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="GitHub" src="../_static/images/github_button.png"/></a>
+&nbsp;<a href="https://stackoverflow.com/questions/tagged/hyperledger-fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="StackOverflow" src="../_static/images/stackoverflow_button.png"/></a>
+&nbsp;<a href="https://discord.com/invite/hyperledger"><img style="padding: 0px; margin: auto auto auto auto;" alt="Discord" src="../_static/images/discord_button.png"/></a>
+&nbsp;<a href="https://www.youtube.com/playlist?list=PL0MZ85B_96CH7wvtrRzV7SvtRY0sI0DEg"><img style="padding: 0px; margin: auto auto auto auto;" alt="Youtube Channel" src="../_static/images/youtube_button.png"/></a>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../whatis.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html">What’s new in Hyperledger Fabric v2.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html#release-notes">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started - Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started_run_fabric.html">Getting Started - Run Fabric</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../test_network.html">Using the Fabric test network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deploy_chaincode.html">Deploying a smart contract to a channel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../write_first_app.html">Running a Fabric Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cc_basic.html">Running External Chaincode Builders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../private_data_tutorial.html">Using Private Data in Fabric</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Secured asset transfer in Fabric</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scenario-requirements">Scenario requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-privacy-is-maintained">How privacy is maintained</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-the-transfer-is-implemented">How the transfer is implemented</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-the-asset">Creating the asset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#agreeing-to-the-transfer">Agreeing to the transfer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transferring-the-asset">Transferring the asset</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-secured-asset-transfer-smart-contract">Running the secured asset transfer smart contract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-the-test-network">Deploy the test network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-the-smart-contract">Deploy the smart contract</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#set-the-environment-variables-to-operate-as-org1">Set the environment variables to operate as Org1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-the-environment-variables-to-operate-as-org2">Set the environment variables to operate as Org2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-asset">Create an asset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operate-from-the-org1-terminal">Operate from the Org1 terminal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operate-from-the-org2-terminal">Operate from the Org2 terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#agree-to-sell-the-asset">Agree to sell the asset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agree-to-sell-as-org1">Agree to sell as Org1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agree-to-buy-as-org2">Agree to buy as Org2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transfer-the-asset-from-org1-to-org2">Transfer the asset from Org1 to Org2</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transfer-the-asset-as-org1">Transfer the asset as Org1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update-the-asset-description-as-org2">Update the asset description as Org2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clean-up">Clean up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../couchdb_tutorial.html">Using CouchDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create_channel/create_channel_overview.html">Creating a channel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../channel_update_tutorial.html">Adding an Org to a Channel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config_update.html">Updating a channel configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chaincode4ade.html">Writing Your First Chaincode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../peer-chaincode-devmode.html">Running chaincode in development mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../videos.html">Videos</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment_guide_overview.html">Deploying a production network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ops_guide.html">Operations Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../upgrade.html">Upgrading to the latest release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../command_ref.html">Commands Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Fabric-FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributions Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../questions.html">Still Have Questions?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../status.html">Status</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hyperledger Fabric Docs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Secured asset transfer in Fabric</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/secured_asset_transfer/secured_private_asset_transfer_tutorial.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="secured-asset-transfer-in-fabric">
+<h1>Secured asset transfer in Fabric<a class="headerlink" href="#secured-asset-transfer-in-fabric" title="Link to this heading">¶</a></h1>
+<p>This tutorial will demonstrate how an asset can be represented and traded between organizations in a Hyperledger Fabric blockchain channel, while keeping details of the asset and transaction private using private data.
+Each on-chain asset is a non-fungible token (NFT) that represents a specific asset having certain immutable properties (such as size and color) with a unique owner. When the owner wants to sell the asset, both parties need to agree to the same price before the asset is transferred. The private asset transfer smart contract enforces that only the owner of the asset can transfer the asset. In the course of this tutorial, you will learn how Fabric features such as state based endorsement, private data, and access control come together to provide secured transactions that are both private and verifiable.</p>
+<p>This tutorial will deploy the <a class="reference external" href="https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-secured-agreement/chaincode-go">secured asset transfer sample</a> to demonstrate how to transfer a private asset between two organizations without publicly sharing data. You should have completed the task
+<a class="reference external" href="../install.html#install-samples-binaries-and-docker-images">Install Samples, Binaries, and Docker Images</a>.</p>
+<section id="scenario-requirements">
+<h2>Scenario requirements<a class="headerlink" href="#scenario-requirements" title="Link to this heading">¶</a></h2>
+<p>The private asset transfer scenario is bound by the following requirements:</p>
+<ul class="simple">
+<li><p>An asset may be issued by the first owner’s organization (in the real world issuance may be restricted to some authority that certifies an asset’s properties).</p></li>
+<li><p>Ownership is managed at the organization level (the Fabric permissioning scheme would equally support ownership at an individual identity level within an organization).</p></li>
+<li><p>The asset identifier is a hash of the asset’s immutable properties, and along with the current owner is stored as public channel data for all channel members to see.</p></li>
+<li><p>The asset immutable properties however are private information known only to the asset owner (and prior owners).</p></li>
+<li><p>An interested buyer will want to verify an asset’s private properties against the hashed asset id before purchasing. This confirms that the buyer has the correct asset description.</p></li>
+<li><p>An interested buyer will want to verify an asset’s provenance, specifically the asset’s origin and chain of custody. This confirms that the asset has not changed since issuance.</p></li>
+<li><p>To transfer an asset, a buyer and seller must first agree on the asset’s properties and sales price.</p></li>
+<li><p>Only the current owner may transfer their asset to another organization.</p></li>
+<li><p>The actual private asset transfer must verify that the asset’s properties and price have been agreed to. Both buyer and seller must endorse the transfer.</p></li>
+</ul>
+</section>
+<section id="how-privacy-is-maintained">
+<h2>How privacy is maintained<a class="headerlink" href="#how-privacy-is-maintained" title="Link to this heading">¶</a></h2>
+<p>The smart contract uses the following techniques to ensure that the asset properties remain private:</p>
+<ul class="simple">
+<li><p>The asset properties are stored in the current owning organization’s implicit private data collection on the organization’s peers only. Each organization on a Fabric channel has a private data collection that their own organization can use. This collection is <em>implicit</em> because it does not need to be explicitly defined in the chaincode.</p></li>
+<li><p>Although a hash of the private properties is automatically stored on-chain for all channel members to see, a random salt is included in the private properties so that other channel members cannot guess the private data pre-image through a dictionary attack.</p></li>
+<li><p>Smart contract requests utilize the transient field for private data so that private data does not get included in the final on-chain transaction.</p></li>
+<li><p>Private data queries must originate from a client whose org id matches the peer’s org id, which must be the same as the asset owner’s org id.</p></li>
+</ul>
+</section>
+<section id="how-the-transfer-is-implemented">
+<h2>How the transfer is implemented<a class="headerlink" href="#how-the-transfer-is-implemented" title="Link to this heading">¶</a></h2>
+<p>Before we start using the private asset transfer smart contract we will provide an overview of the transaction flow and how Fabric features are used to protect the asset created on the blockchain:</p>
+<section id="creating-the-asset">
+<h3>Creating the asset<a class="headerlink" href="#creating-the-asset" title="Link to this heading">¶</a></h3>
+<p>The private asset transfer smart contract is deployed with an endorsement policy that requires an endorsement from any channel member. This allows any organization to create an asset that they own without requiring an endorsement from other channel members. The creation of the asset is the only transaction that uses the chaincode level endorsement policy. Transactions that update or transfer existing assets will be governed by state based endorsement policies or the endorsement policies of private data collections. Note that in other scenarios, you may want an issuing authority to also endorse create transactions.</p>
+<p>The smart contract uses the following Fabric features to ensure that the asset can only be updated or transferred by the organization that owns the asset:</p>
+<ul class="simple">
+<li><p>When the asset is created, the smart contract gets the MSP ID of the organization that submitted the request, and stores the MSP ID as the owner in the asset key/value in the public chaincode world state. Subsequent smart contract requests to update or transfer the asset will use access control logic to verify that the requesting client is from the same organization. Note that in other scenarios, the ownership could be based on a specific client identity within an organization, rather than an organization itself.</p></li>
+<li><p>Also when the asset is created, the smart contract sets a state based endorsement policy for the asset key. The state based policy specifies that a peer from the organization that owns the asset must endorse a subsequent request to update or transfer the asset. This prevents any other organization from updating or initiating the transfer of the asset using a smart contract that has been maliciously altered on their own peers. To further secure asset transfer, consider including other parties in the asset’s state based endorsement policy, such as a trusted third party.</p></li>
+</ul>
+</section>
+<section id="agreeing-to-the-transfer">
+<h3>Agreeing to the transfer<a class="headerlink" href="#agreeing-to-the-transfer" title="Link to this heading">¶</a></h3>
+<p>After an asset is created, channel members can use the smart contract to agree to transfer the asset:</p>
+<ul class="simple">
+<li><p>The owner of the asset can change the description in the public ownership record, for example to advertise that the asset is for sale. Smart contract access control enforces that this change needs to be submitted from a member of the asset owner organization. The state based endorsement policy enforces that this description change must be endorsed by a peer from the owner’s organization.</p></li>
+</ul>
+<p>The asset owner and the asset buyer agree to transfer the asset for a certain price:</p>
+<ul class="simple">
+<li><p>The price and the private asset properties agreed to by the buyer and the seller is stored in each organization’s implicit private data collection. The private data collection keeps the agreed price and asset properties secret from other members of the channel. The endorsement policy of the implicit private data collection ensures that the respective organization’s peer endorsed the price agreement, and the smart contract access control logic ensures that the price agreement was submitted by a client of the associated organization.</p></li>
+<li><p>A hash of each price agreement and of the asset properties is automatically stored on the ledger when using private data collections. These hashes will match only if the two organizations have agreed to the same price and the two asset descriptions correspond. This allows the organizations to verify that they have come to agreement on the transfer details when they execute and endorse the transfer transaction. A random trade id is added to the price agreement, which serves as a <em>salt</em> to ensure that other channel members can not use the hash on the ledger to guess the price.</p></li>
+</ul>
+</section>
+<section id="transferring-the-asset">
+<h3>Transferring the asset<a class="headerlink" href="#transferring-the-asset" title="Link to this heading">¶</a></h3>
+<p>After the two organizations have agreed to the same price and asset properties, the asset owner can invoke the transfer function to transfer the asset to the buyer:</p>
+<ul class="simple">
+<li><p>Smart contract access control ensures that the transfer must be initiated by a member of the organization that owns the asset.</p></li>
+<li><p>The transfer function verifies that the on-chain asset properties present in the seller’s private collection correspond to the ones present in the buyer’s private collection by comparing their hash, to ensure that the asset owner is <em>selling</em> the same asset declared.</p></li>
+<li><p>The transfer function also uses the hash of the price agreement on the ledger to ensure that both organizations have agreed to the same price.</p></li>
+<li><p>If the transfer conditions are met, the transfer function deletes the asset from the collection of the seller and updates the owner in the public ownership record.</p></li>
+<li><p>The price agreements are also deleted from both the seller and buyer implicit private data collection, and a sales receipt is created in each private data collection to record the transaction price and timestamp.</p></li>
+<li><p>Because the transfer transaction updates data in the seller and buyer implicit data collections, the transfer must be endorsed by peers from both buyer and seller.</p></li>
+<li><p>The state based endorsement policy of the public asset record is updated so that only a peer of the new owner of the asset can update or initialize a subsequent transfer of their new asset.</p></li>
+</ul>
+</section>
+</section>
+<section id="running-the-secured-asset-transfer-smart-contract">
+<h2>Running the secured asset transfer smart contract<a class="headerlink" href="#running-the-secured-asset-transfer-smart-contract" title="Link to this heading">¶</a></h2>
+<p>You can use the Fabric test network to run the secured asset transfer smart contract. The test network contains two peer organizations, Org1 and Org2, that operate one peer each. In this tutorial, we will deploy the smart contract to a channel of the test network joined by both organizations. We will first create an asset that is owned by Org1. After the two organizations agree on the asset properties and price, we will transfer the asset from Org1 to Org2.</p>
+</section>
+<section id="deploy-the-test-network">
+<h2>Deploy the test network<a class="headerlink" href="#deploy-the-test-network" title="Link to this heading">¶</a></h2>
+<p>We are going to use the Fabric test network to run the secured asset transfer smart contract. Open a command terminal and navigate to test network directory in your local clone of <a class="reference external" href="https://github.com/hyperledger/fabric-samples">fabric-samples</a>. We will operate from the <code class="docutils literal notranslate"><span class="pre">test-network</span></code> directory for the remainder of the tutorial.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">fabric</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="n">network</span>
+</pre></div>
+</div>
+<p>First, bring down any running instances of the test network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">network</span><span class="o">.</span><span class="n">sh</span> <span class="n">down</span>
+</pre></div>
+</div>
+<p>You can then deploy a new instance the network with the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">network</span><span class="o">.</span><span class="n">sh</span> <span class="n">up</span> <span class="n">createChannel</span> <span class="o">-</span><span class="n">c</span> <span class="n">mychannel</span>
+</pre></div>
+</div>
+<p>The script will deploy the nodes of the network and create a single channel named <code class="docutils literal notranslate"><span class="pre">mychannel</span></code> with Org1 and Org2 as channel members. We will use this channel to deploy the smart contract and trade our asset.</p>
+</section>
+<section id="deploy-the-smart-contract">
+<h2>Deploy the smart contract<a class="headerlink" href="#deploy-the-smart-contract" title="Link to this heading">¶</a></h2>
+<p>You can use the test network script to deploy the secured asset transfer smart contract to the channel. Run the following command to deploy the smart contract to <code class="docutils literal notranslate"><span class="pre">mychannel</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">network</span><span class="o">.</span><span class="n">sh</span> <span class="n">deployCC</span> <span class="o">-</span><span class="n">ccn</span> <span class="n">secured</span> <span class="o">-</span><span class="n">ccp</span> <span class="o">../</span><span class="n">asset</span><span class="o">-</span><span class="n">transfer</span><span class="o">-</span><span class="n">secured</span><span class="o">-</span><span class="n">agreement</span><span class="o">/</span><span class="n">chaincode</span><span class="o">-</span><span class="n">go</span><span class="o">/</span> <span class="o">-</span><span class="n">ccl</span> <span class="n">go</span> <span class="o">-</span><span class="n">ccep</span> <span class="s2">&quot;OR(&#39;Org1MSP.peer&#39;,&#39;Org2MSP.peer&#39;)&quot;</span>
+</pre></div>
+</div>
+<p>Note that we are using the <code class="docutils literal notranslate"><span class="pre">-ccep</span></code> flag to deploy the smart contract with an endorsement policy of <code class="docutils literal notranslate"><span class="pre">&quot;OR('Org1MSP.peer','Org2MSP.peer')&quot;</span></code>. This allows either organization to create an asset without receiving an endorsement from the other organization.</p>
+<section id="set-the-environment-variables-to-operate-as-org1">
+<h3>Set the environment variables to operate as Org1<a class="headerlink" href="#set-the-environment-variables-to-operate-as-org1" title="Link to this heading">¶</a></h3>
+<p>In the course of running this sample, you need to interact with the network as both Org1 and Org2. To make the tutorial easier to use, we will use separate terminals for each organization. Open a new terminal and make sure that you are operating from the <code class="docutils literal notranslate"><span class="pre">test-network</span></code> directory. Set the following environment variables to operate the <code class="docutils literal notranslate"><span class="pre">peer</span></code> CLI as the Org1 admin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=$PWD/../config/
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID=&quot;Org1MSP&quot;
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_ADDRESS=localhost:7051
+</pre></div>
+</div>
+<p>The environment variables also specify the endpoint information of the Org1 peer to submit requests.</p>
+</section>
+<section id="set-the-environment-variables-to-operate-as-org2">
+<h3>Set the environment variables to operate as Org2<a class="headerlink" href="#set-the-environment-variables-to-operate-as-org2" title="Link to this heading">¶</a></h3>
+<p>Now that we have one terminal that we can operate as Org1, open a new terminal for Org2. Make sure that this terminal is also operating from the <code class="docutils literal notranslate"><span class="pre">test-network</span></code> directory. Set the following environment variables to operate as the Org2 admin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=$PWD/../config/
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID=&quot;Org2MSP&quot;
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export CORE_PEER_ADDRESS=localhost:9051
+</pre></div>
+</div>
+<p>You will need switch between the two terminals as you go through the tutorial.</p>
+</section>
+</section>
+<section id="create-an-asset">
+<h2>Create an asset<a class="headerlink" href="#create-an-asset" title="Link to this heading">¶</a></h2>
+<p>Any channel member can use the smart contract to create an asset that is owned by their organization. The details of the asset will be stored in a private data collection, and can only accessed by the organization that owns the asset. A public record of the asset, its owner, and a public description is stored on the channel ledger. Any channel member can access the public ownership record to see who owns the asset, and can read the description to see if the asset is for sale.</p>
+<section id="operate-from-the-org1-terminal">
+<h3>Operate from the Org1 terminal<a class="headerlink" href="#operate-from-the-org1-terminal" title="Link to this heading">¶</a></h3>
+<p>Before we create the asset, we need to specify the details of what our asset will be. Issue the following command to create a JSON that will describe the asset. The <code class="docutils literal notranslate"><span class="pre">&quot;salt&quot;</span></code> parameter is a random string that would prevent another member of the channel from guessing the asset using the hash on the ledger. If there was no salt, a user could theoretically guess asset parameters until the hash of the of the guess and the hash on the ledger matched (this is known as a dictionary attack). This string is encoded in Base64 format so that it can be passed to the creation transaction as transient data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ASSET_PROPERTIES=$(echo -n &quot;{\&quot;object_type\&quot;:\&quot;asset_properties\&quot;,\&quot;color\&quot;:\&quot;blue\&quot;,\&quot;size\&quot;:35,\&quot;salt\&quot;:\&quot;a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\&quot;}&quot; | base64 | tr -d \\n)
+</pre></div>
+</div>
+<p>We can now use the following command to create an asset that belongs to Org1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;{&quot;function&quot;:&quot;CreateAsset&quot;,&quot;Args&quot;:[&quot;A new asset for Org1MSP&quot;]}&#39;</span> <span class="o">--</span><span class="n">transient</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">asset_properties</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">$ASSET_PROPERTIES</span><span class="se">\&quot;</span><span class="s2">}&quot;</span>
+</pre></div>
+</div>
+<p>The hash of the asset properties will become the asset ID and is returned by the CreateAsset call. Look for the hash in the response “payload” that was reported to the CLI, and set it as an environment variable for later reference.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">ASSET_ID</span><span class="o">=</span><span class="n">d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc</span>
+</pre></div>
+</div>
+<p>We can query the Org1 implicit data collection to see the asset that was created, write the following command by substituting assetId with the id returned from the createAsset function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">GetAssetPrivateProperties</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>When successful, the command will return the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;object_type&quot;</span><span class="p">:</span><span class="s2">&quot;asset_properties&quot;</span><span class="p">,</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span><span class="s2">&quot;size&quot;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span><span class="s2">&quot;salt&quot;</span><span class="p">:</span><span class="s2">&quot;a94a8fe5ccb19ba61c4c0873d391e987982fbbd3&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We can also query the ledger to see the public ownership record:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ReadAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+
+</pre></div>
+</div>
+<p>The command will return the record that the asset is owned by Org1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;object_type&quot;</span><span class="p">:</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span><span class="s2">&quot;asset_id&quot;</span><span class="p">:</span><span class="s2">&quot;d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc&quot;</span><span class="p">,</span><span class="s2">&quot;owner_org&quot;</span><span class="p">:</span><span class="s2">&quot;Org1MSP&quot;</span><span class="p">,</span><span class="s2">&quot;public_description&quot;</span><span class="p">:</span><span class="s2">&quot;A new asset for Org1MSP&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Because the market for assets is hot, Org1 wants to flip this asset and put it up for sale. As the asset owner, Org1 can update the public description to advertise that the asset is for sale. Run the following command to change the asset description:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ChangePublicDescription</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">This asset is for sale</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>Query the ledger again to see the updated description:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ReadAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>We can now see that the asset is for sale:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;object_type&quot;</span><span class="p">:</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span><span class="s2">&quot;asset_id&quot;</span><span class="p">:</span><span class="s2">&quot;d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc&quot;</span><span class="p">,</span><span class="s2">&quot;owner_org&quot;</span><span class="p">:</span><span class="s2">&quot;Org1MSP&quot;</span><span class="p">,</span><span class="s2">&quot;public_description&quot;</span><span class="p">:</span><span class="s2">&quot;This asset is for sale&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="Org1 creates a asset" src="../_images/transfer_assets_1.png" /><br />
+<em>Figure 1: When Org1 creates an asset that they own, the asset details are stored in the Org1 implicit data collection on the Org1 peer. The public ownership record is stored in the channel world state, and is stored on both the Org1 and Org2 peers. A hash of the asset key and a hash the asset details are also visible in the channel world state and are stored on the peers of both organizations.</em></p>
+</section>
+<section id="operate-from-the-org2-terminal">
+<h3>Operate from the Org2 terminal<a class="headerlink" href="#operate-from-the-org2-terminal" title="Link to this heading">¶</a></h3>
+<p>If we operate from the Org2 terminal, we can use the smart contract query the public asset data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">ASSET_ID</span><span class="o">=</span><span class="n">d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc</span>
+<span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ReadAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>From this query, Org2 learns that the asset is for sale:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;object_type&quot;</span><span class="p">:</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span><span class="s2">&quot;asset_id&quot;</span><span class="p">:</span><span class="s2">&quot;d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc&quot;</span><span class="p">,</span><span class="s2">&quot;owner_org&quot;</span><span class="p">:</span><span class="s2">&quot;Org1MSP&quot;</span><span class="p">,</span><span class="s2">&quot;public_description&quot;</span><span class="p">:</span><span class="s2">&quot;This asset is for sale&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><em>In a real chaincode you may want to query for all assets for sale, by using a JSON query, or by creating a different sale key and using a key range query to find the assets currently for sale.</em>
+Any changes to the public description of the asset owned by Org1 needs to be endorsed by Org1. The endorsement policy is reinforced by an access control policy within the chaincode that any update needs to be submitted by the organization that owns the asset. Lets see what happens if Org2 tried to change the public description as a prank:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ChangePublicDescription</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">the worst asset</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>The smart contract does not allow Org2 to access the public description of the asset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span><span class="p">:</span> <span class="n">endorsement</span> <span class="n">failure</span> <span class="n">during</span> <span class="n">invoke</span><span class="o">.</span> <span class="n">response</span><span class="p">:</span> <span class="n">status</span><span class="p">:</span><span class="mi">500</span> <span class="n">message</span><span class="p">:</span><span class="s2">&quot;a client from Org2MSP cannot update the description of an asset owned by Org1MSP&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="agree-to-sell-the-asset">
+<h2>Agree to sell the asset<a class="headerlink" href="#agree-to-sell-the-asset" title="Link to this heading">¶</a></h2>
+<p>To sell an asset, both the buyer and the seller must agree on an asset price and make sure that they both have the same asset properties in their respective private data collections. Each party stores the price that they agree to in their own private data collection. The private asset transfer smart contract enforces that both parties need to agree to the same price and asset properties before the asset can be transferred.</p>
+</section>
+<section id="agree-to-sell-as-org1">
+<h2>Agree to sell as Org1<a class="headerlink" href="#agree-to-sell-as-org1" title="Link to this heading">¶</a></h2>
+<p>Operate from the Org1 terminal. Org1 will agree to set the asset price as 110 dollars. The <code class="docutils literal notranslate"><span class="pre">trade_id</span></code> is used as salt to prevent a channel member that is not a buyer or a seller from guessing the price. This value needs to be passed out of band together with the asset properties, through email or other communication, between the buyer and the seller. The buyer and the seller can also add salt to the asset key to prevent other members of the channel from guessing which asset is for sale.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ASSET_PRICE=$(echo -n &quot;{\&quot;asset_id\&quot;:\&quot;$ASSET_ID\&quot;,\&quot;trade_id\&quot;:\&quot;109f4b3c50d7b0df729d299bc6f8e9ef9066971f\&quot;,\&quot;price\&quot;:110}&quot; | base64 | tr -d \\n)
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile &quot;${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot; -C mychannel -n secured -c &quot;{\&quot;function\&quot;:\&quot;AgreeToSell\&quot;,\&quot;Args\&quot;:[\&quot;$ASSET_ID\&quot;]}&quot; --transient &quot;{\&quot;asset_price\&quot;:\&quot;$ASSET_PRICE\&quot;}&quot;
+</pre></div>
+</div>
+<p>We can query the Org1 private data collection to read the agreed to selling price:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">GetAssetSalesPrice</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="agree-to-buy-as-org2">
+<h2>Agree to buy as Org2<a class="headerlink" href="#agree-to-buy-as-org2" title="Link to this heading">¶</a></h2>
+<p>Operate from the Org2 terminal. Run the following command to verify the asset properties before agreeing to buy. The asset properties and salt would be passed out of band, through email or other communication, between the buyer and seller.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ASSET_PROPERTIES=$(echo -n &quot;{\&quot;object_type\&quot;:\&quot;asset_properties\&quot;,\&quot;color\&quot;:\&quot;blue\&quot;,\&quot;size\&quot;:35,\&quot;salt\&quot;:\&quot;a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\&quot;}&quot; | base64 | tr -d \\n)
+peer chaincode query -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile &quot;${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot; -C mychannel -n secured -c &quot;{\&quot;function\&quot;:\&quot;VerifyAssetProperties\&quot;,\&quot;Args\&quot;:[\&quot;$ASSET_ID\&quot;]}&quot; --transient &quot;{\&quot;asset_properties\&quot;:\&quot;$ASSET_PROPERTIES\&quot;}&quot;
+</pre></div>
+</div>
+<p>Run the following command to agree to buy asset1 for 100 dollars. As of now, Org2 will agree to a different price than Org1. Don’t worry, the two organizations will agree to the same price in a future step. However, we we can use this temporary disagreement as a test of what happens if the buyer and the seller agree to a different price. Org2 needs to use the same <code class="docutils literal notranslate"><span class="pre">trade_id</span></code> as Org1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ASSET_PRICE=$(echo -n &quot;{\&quot;asset_id\&quot;:\&quot;$ASSET_ID\&quot;,\&quot;trade_id\&quot;:\&quot;109f4b3c50d7b0df729d299bc6f8e9ef9066971f\&quot;,\&quot;price\&quot;:100}&quot; | base64 | tr -d \\n)
+export ASSET_PROPERTIES=$(echo -n &quot;{\&quot;object_type\&quot;:\&quot;asset_properties\&quot;,\&quot;color\&quot;:\&quot;blue\&quot;,\&quot;size\&quot;:35,\&quot;salt\&quot;:\&quot;a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\&quot;}&quot; | base64 | tr -d \\n)
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile &quot;${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot; -C mychannel -n secured -c &quot;{\&quot;function\&quot;:\&quot;AgreeToBuy\&quot;,\&quot;Args\&quot;:[\&quot;$ASSET_ID\&quot;]}&quot; --transient &quot;{\&quot;asset_price\&quot;:\&quot;$ASSET_PRICE\&quot;, \&quot;asset_properties\&quot;:\&quot;$ASSET_PROPERTIES\&quot;}&quot;
+</pre></div>
+</div>
+<p>You can read the agreed purchase price from the Org2 implicit data collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">GetAssetBidPrice</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p><img alt="Org1 and Org2 agree on transfer" src="../_images/transfer_assets_2.png" /><br />
+<em>Figure 2: After Org1 and Org2 agree to transfer the asset, the price agreed to by each organization is stored in their private data collections. A composite key for the seller and the buyer is used to prevent a collision with the asset details and asset ownership record. The price that is agreed to is only stored on the peers of each organization. However, the hash of both agreements is stored in the channel world state on every peer joined to the channel.</em></p>
+</section>
+<section id="transfer-the-asset-from-org1-to-org2">
+<h2>Transfer the asset from Org1 to Org2<a class="headerlink" href="#transfer-the-asset-from-org1-to-org2" title="Link to this heading">¶</a></h2>
+<p>After both organizations have agreed to their price and asset properties, Org1 can attempt to transfer the asset to Org2. The private asset transfer function in the smart contract uses the hash on the ledger to check that both organizations have agreed to the same price. The function will also check the asset properties hash of both seller and buyer private collection to check that the asset that is transferred is the same asset that Org1 owns.</p>
+<section id="transfer-the-asset-as-org1">
+<h3>Transfer the asset as Org1<a class="headerlink" href="#transfer-the-asset-as-org1" title="Link to this heading">¶</a></h3>
+<p>Operate from the Org1 terminal. The owner of the asset needs to initiate the transfer. Note that the command below uses the <code class="docutils literal notranslate"><span class="pre">--peerAddresses</span></code> flag to target the peers of both Org1 and Org2. Both organizations need to endorse the transfer. <em>Also note that the price is passed in the transfer request as transient properties. This is passed so that the current owner can be sure that the correct asset is transferred for the correct price. These properties will be checked against the on-chain hashes by both endorsers.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">TransferAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Org2MSP</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span> <span class="o">--</span><span class="n">transient</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">asset_price</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">$ASSET_PRICE</span><span class="se">\&quot;</span><span class="s2">}&quot;</span> <span class="o">--</span><span class="n">peerAddresses</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7051</span> <span class="o">--</span><span class="n">tlsRootCertFiles</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt&quot;</span> <span class="o">--</span><span class="n">peerAddresses</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">9051</span> <span class="o">--</span><span class="n">tlsRootCertFiles</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt&quot;</span>
+</pre></div>
+</div>
+<p>Because the two organizations have not agreed to the same price, the transfer cannot be completed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span><span class="p">:</span> <span class="n">endorsement</span> <span class="n">failure</span> <span class="n">during</span> <span class="n">invoke</span><span class="o">.</span> <span class="n">response</span><span class="p">:</span> <span class="n">status</span><span class="p">:</span><span class="mi">500</span> <span class="n">message</span><span class="p">:</span><span class="s2">&quot;failed transfer verification: hash cf74b8ce092b637bd28f98f7cdd490534c102a0665e7c985d4f2ab9810e30b1c for passed price JSON {</span><span class="se">\&quot;</span><span class="s2">asset_id</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">d9923f21b770adbc79cbcc47a3aeecc81dc7f030bd129155301ce3932be7fbcc</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">trade_id</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">109f4b3c50d7b0df729d299bc6f8e9ef9066971f</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">price</span><span class="se">\&quot;</span><span class="s2">:110} does not match on-chain hash 09341dbb39e81fb50ccb3a81770254525318f777fad217ae49777487116cceb4, buyer hasn&#39;t agreed to the passed trade id and price&quot;</span>
+</pre></div>
+</div>
+<p>As a result, Org1 and Org2 come to a new agreement on the price at which the asset will be purchased. Org1 drops the price of the asset to 100:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export ASSET_PRICE=$(echo -n &quot;{\&quot;asset_id\&quot;:\&quot;$ASSET_ID\&quot;,\&quot;trade_id\&quot;:\&quot;109f4b3c50d7b0df729d299bc6f8e9ef9066971f\&quot;,\&quot;price\&quot;:100}&quot; | base64 | tr -d \\n)
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile &quot;${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot; -C mychannel -n secured -c &quot;{\&quot;function\&quot;:\&quot;AgreeToSell\&quot;,\&quot;Args\&quot;:[\&quot;$ASSET_ID\&quot;,\&quot;Org2MSP\&quot;]}&quot; --transient &quot;{\&quot;asset_price\&quot;:\&quot;$ASSET_PRICE\&quot;}&quot;
+</pre></div>
+</div>
+<p>Now that the buyer and seller have agreed to the same price, Org1 can transfer the asset to Org2.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">TransferAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Org2MSP</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span> <span class="o">--</span><span class="n">transient</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">asset_price</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">$ASSET_PRICE</span><span class="se">\&quot;</span><span class="s2">}&quot;</span> <span class="o">--</span><span class="n">peerAddresses</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7051</span> <span class="o">--</span><span class="n">tlsRootCertFiles</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt&quot;</span> <span class="o">--</span><span class="n">peerAddresses</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">9051</span> <span class="o">--</span><span class="n">tlsRootCertFiles</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt&quot;</span>
+</pre></div>
+</div>
+<p>You can query the asset ownership record to verify that the transfer was successful.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ReadAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>The record now lists Org2 as the asset owner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;object_type&quot;</span><span class="p">:</span><span class="s2">&quot;asset&quot;</span><span class="p">,</span><span class="s2">&quot;asset_id&quot;</span><span class="p">:</span><span class="s2">&quot;&lt;asset1&gt;&quot;</span><span class="p">,</span><span class="s2">&quot;owner_org&quot;</span><span class="p">:</span><span class="s2">&quot;Org2MSP&quot;</span><span class="p">,</span><span class="s2">&quot;public_description&quot;</span><span class="p">:</span><span class="s2">&quot;This asset is for sale&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="Org1 transfers the asset to Org2" src="../_images/transfer_assets_3.png" /><br />
+<em>Figure 3: After the asset is transferred, the asset details are placed in the Org2 implicit data collection and deleted from the Org1 implicit data collection. As a result, the asset details are now only stored on the Org2 peer. The asset ownership record on the ledger is updated to reflect that the asset is owned by Org2.</em></p>
+</section>
+<section id="update-the-asset-description-as-org2">
+<h3>Update the asset description as Org2<a class="headerlink" href="#update-the-asset-description-as-org2" title="Link to this heading">¶</a></h3>
+<p>Operate from the Org2 terminal. Now that Org2 owns the asset, we can read the asset details from the Org2 implicit data collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">GetAssetPrivateProperties</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>Org2 can now update the asset public description:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">invoke</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ChangePublicDescription</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">This asset is not for sale</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+<p>Query the ledger to verify that the asset is no longer for sale:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peer</span> <span class="n">chaincode</span> <span class="n">query</span> <span class="o">-</span><span class="n">o</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">7050</span> <span class="o">--</span><span class="n">ordererTLSHostnameOverride</span> <span class="n">orderer</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> <span class="o">--</span><span class="n">tls</span> <span class="o">--</span><span class="n">cafile</span> <span class="s2">&quot;$</span><span class="si">{PWD}</span><span class="s2">/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> <span class="o">-</span><span class="n">C</span> <span class="n">mychannel</span> <span class="o">-</span><span class="n">n</span> <span class="n">secured</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">function</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ReadAsset</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">Args</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">$ASSET_ID</span><span class="se">\&quot;</span><span class="s2">]}&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="clean-up">
+<h2>Clean up<a class="headerlink" href="#clean-up" title="Link to this heading">¶</a></h2>
+<p>When you are finished transferring assets, you can bring down the test network. The command will remove all the nodes of the test network, and delete any ledger data that you created:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">network</span><span class="o">.</span><span class="n">sh</span> <span class="n">down</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../couchdb_tutorial.html" class="btn btn-neutral float-right" title="Using CouchDB" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../private_data_tutorial.html" class="btn btn-neutral" title="Using Private Data in Fabric" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Hyperledger 2020-2023.
+    <br>
+      <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+        <img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Fabric networks are structured &mdash; Hyperledger Fabric Docs main documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c3038dac" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Identity" href="../identity/identity.html" />
+    <link rel="prev" title="Hyperledger Fabric Model" href="../fabric_model.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="hyperledger-fabric" /><meta name="readthedocs-version-slug" content="release-2.5" /><meta name="readthedocs-resolver-filename" content="/network/network.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hyperledger Fabric Docs
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+<br><img style="background-color: #fff; height: unset; width: unset;" alt="Hyperledger Fabric" src=../_images/hyperledger_fabric_logo_color.png />
+<br>
+<a href="https://github.com/hyperledger/fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="GitHub" src="../_static/images/github_button.png"/></a>
+&nbsp;<a href="https://stackoverflow.com/questions/tagged/hyperledger-fabric"><img style="padding: 0px; margin: auto auto auto auto;" alt="StackOverflow" src="../_static/images/stackoverflow_button.png"/></a>
+&nbsp;<a href="https://discord.com/invite/hyperledger"><img style="padding: 0px; margin: auto auto auto auto;" alt="Discord" src="../_static/images/discord_button.png"/></a>
+&nbsp;<a href="https://www.youtube.com/playlist?list=PL0MZ85B_96CH7wvtrRzV7SvtRY0sI0DEg"><img style="padding: 0px; margin: auto auto auto auto;" alt="Youtube Channel" src="../_static/images/youtube_button.png"/></a>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../whatis.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html">What’s new in Hyperledger Fabric v2.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew.html#release-notes">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../key_concepts.html">Key Concepts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../blockchain.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fabric_model.html">Hyperledger Fabric Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How Fabric networks are structured</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-a-blockchain-network">What is a blockchain network?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-sample-network">The sample network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-the-network">Creating the network</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#certificate-authorities">Certificate Authorities</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#join-nodes-to-the-channel">Join nodes to the channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-approve-and-commit-a-chaincode">Install, approve, and commit a chaincode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-an-application-on-the-channel">Using an application on the channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#joining-components-to-multiple-channels">Joining components to multiple channels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-the-new-channel-configuration">Creating the new channel configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#join-components-to-the-new-channel">Join components to the new channel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-an-organization-to-an-existing-channel">Adding an organization to an existing channel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-existing-components-to-the-newly-joined-channel">Adding existing components to the newly joined channel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#network-recap">Network recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../identity/identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../membership/membership.html">Membership Service Provider (MSP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../policies/policies.html">Policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../peers/peers.html">Peers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ledger/ledger.html">Ledger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../orderer/ordering_service.html">The Ordering Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smartcontract/smartcontract.html">Smart Contracts and Chaincode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chaincode_lifecycle.html">Fabric chaincode lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../private-data/private-data.html">Private data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../capabilities_concept.html">Channel capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../security_model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usecases.html">Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started - Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started_run_fabric.html">Getting Started - Run Fabric</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment_guide_overview.html">Deploying a production network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ops_guide.html">Operations Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../upgrade.html">Upgrading to the latest release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../command_ref.html">Commands Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Fabric-FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributions Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../questions.html">Still Have Questions?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../status.html">Status</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hyperledger Fabric Docs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../key_concepts.html">Key Concepts</a></li>
+      <li class="breadcrumb-item active">How Fabric networks are structured</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/network/network.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-fabric-networks-are-structured">
+<h1>How Fabric networks are structured<a class="headerlink" href="#how-fabric-networks-are-structured" title="Link to this heading">¶</a></h1>
+<p>This topic will describe, <strong>at a conceptual level</strong>, how Hyperledger Fabric allows organizations to collaborate in the formation of blockchain networks. If you’re an architect, administrator or developer, you can use this topic to get a solid understanding of the major structure and process components in a Hyperledger Fabric blockchain network. This topic will use a manageable example that introduces all of the major components in a blockchain network.</p>
+<p>After reading this topic and understanding the concept of policies, you will have a solid understanding of the decisions that organizations need to make to establish the policies that control a deployed Hyperledger Fabric network. You’ll also understand how organizations manage network evolution using declarative policies – a key feature of Hyperledger Fabric. In a nutshell, you’ll understand the major technical components of Hyperledger Fabric and the decisions organizations need to make about them.</p>
+<p>Note: in this topic, we’ll refer to the structure of a network that does not have a “system channel”, a channel run by the ordering service that ordering nodes are bootstrapped with. For a version of this topic that does use the system channel, check out <a class="reference external" href="https://hyperledger-fabric.readthedocs.io/en/release-2.2/network/network.html">Blockchain network</a>.</p>
+<section id="what-is-a-blockchain-network">
+<h2>What is a blockchain network?<a class="headerlink" href="#what-is-a-blockchain-network" title="Link to this heading">¶</a></h2>
+<p>A blockchain network is a technical infrastructure that provides ledger and smart contract (which are packaged as part of a “chaincode”) services to applications. Primarily, smart contracts are used to generate transactions which are subsequently distributed to every peer node in the network where they are immutably recorded on their copy of the ledger. The users of applications might be end users using client applications or blockchain network administrators.</p>
+<p>In most cases, multiple <a class="reference external" href="../glossary.html#organization">organizations</a> come together to form a <strong>channel</strong> on which transactions are invoked on chaincodes and where permissions are determined by a set of <a class="reference external" href="../policies/policies.html">policies</a> that are agreed to when the channel is originally configured. Moreover, policies can change over time subject to the agreement of the organizations.</p>
+<p><strong>In this topic, we’ll refer to both the “network” and the “channel”. In Hyperledger Fabric, these terms are effectively synonymous, as they both refer collectively to the organizations, components, policies, and processes that govern the interactions between organizations within a defined structure.</strong></p>
+</section>
+<section id="the-sample-network">
+<h2>The sample network<a class="headerlink" href="#the-sample-network" title="Link to this heading">¶</a></h2>
+<p>Before we start, let’s show you what we’re aiming at! Here’s a diagram representing the <strong>final state</strong> of our sample network.</p>
+<p>It might look complicated right now, but as we go through this topic, we will build up the network piece by piece, so that you see how the organizations R1, R2 and R0 contribute infrastructure to the network to help form it. This infrastructure implements the blockchain network, and it is governed by policies agreed by the organizations who form the network – for example, who can add new organizations. You’ll discover how applications consume the ledger and smart contract services provided by the blockchain network.</p>
+<p><img alt="network.1" src="../_images/network.diagram.1.png" /></p>
+<p>Three organizations, R1, R2, and R0 have jointly decided that they will establish a network. This network has a configuration, CC1, which all of the organizations have agreed to and which lists the definition of the organizations as well as the policies which define the roles each organization will play on the channel.</p>
+<p>On this channel, R1 and R2 will join peers, named P1 and P2, to the channel, C1, while R0 owns O, the ordering service of the channel. All of these nodes will contain a copy of the ledger (L1) of the channel, which is where transactions are recorded. Note that the copy of the ledger kept by the ordering service does not contain a <a class="reference external" href="../glossary.html#state-database">state database</a>. R1 and R2 will also interact with the channel through the applications A1 and A2, which they own. All three organizations have a Certificate Authority that has generated the necessary certificates for the nodes, admins, organizations definitions, and applications of its organization.</p>
+</section>
+<section id="creating-the-network">
+<h2>Creating the network<a class="headerlink" href="#creating-the-network" title="Link to this heading">¶</a></h2>
+<p>The first step in creating a network or a channel is to agree to and then define its configuration:</p>
+<p><img alt="network.2" src="../_images/network.diagram.2.png" /></p>
+<p>The channel configuration, CC1, has been agreed to by organizations R1, R2, and R0 and is contained in a block known as a “configuration block” that is, typically, created by the <code class="docutils literal notranslate"><span class="pre">configtxgen</span></code> tool from a <code class="docutils literal notranslate"><span class="pre">configtx.yaml</span></code> file. While it is possible for one organization to create this a channel unilaterally and then invite other organizations to it (we’ll explore this in <a class="reference external" href="#adding-an-organization-to-an-existing-channel">Adding an organization to an existing channel</a>), for now we’ll assume that the organizations wish to collaborate on the channel from the beginning.</p>
+<p>Once a configuration block exists, a channel can be said to <strong>logically exist</strong>, even though no components are physically joined to it. This configuration block contains a record of the organizations that can join components and interact on the channel, as well as the <strong>policies</strong> that define the structure for how decisions are made and specific outcomes are reached. While the peers and applications are critical actors in the network, their behavior in a channel is dictated more by the channel configuration policy than any other factor. For more information about the policies and how they are defined in a channel configuration, check out <a class="reference external" href="../policies/policies.html">Policies</a>.</p>
+<p>The definitions of these organizations, and the identities of their admins, must be created by a Certificate Authority (CA) associated with each organization. In our example, the organizations R1, R2, and R0 have had their certifications and organization definition created by CA1, CA2, and CA0, respectively. For information about how to create a CA, check out <a class="reference external" href="https://hyperledger-fabric-ca.readthedocs.io/en/latest/deployguide/ca-deploy-topology.html">Planning for a CA</a>. After the CA has been created, check out <a class="reference external" href="https://hyperledger-fabric-ca.readthedocs.io/en/latest/deployguide/use_CA.html">Registering and enrolling identities with a CA</a> for information about how to define an organization and create identities for admins and nodes.</p>
+<p>For more information about using <code class="docutils literal notranslate"><span class="pre">configtxgen</span></code> to create a configuration block, check out <a class="reference external" href="../create_channel/create_channel_config.html">Using configtx.yaml to build a channel configuration</a>.</p>
+<section id="certificate-authorities">
+<h3>Certificate Authorities<a class="headerlink" href="#certificate-authorities" title="Link to this heading">¶</a></h3>
+<p>Certificate Authorities play a key role in the network because they dispense X.509 certificates that can be used to identify components as belonging to an organization. Certificates issued by CAs can also be used to sign transactions to indicate that an organization endorses the transaction result – a precondition of it being accepted onto the ledger. Let’s examine these two aspects of a CA in a little more detail.</p>
+<p>Firstly, different components of the blockchain network use certificates to identify themselves to each other as being from a particular organization. That’s why there is usually more than one CA supporting a blockchain network – different organizations often use different CAs. We’re going to use three CAs in our channel; one for each organization. Indeed, CAs are so important that Hyperledger Fabric provides you with a built-in one (called the <em>Fabric-CA</em>) to help you get going, though in practice, organizations will choose to use their own CA.</p>
+<p>The mapping of certificates to member organizations is achieved via a structure called a <a class="reference external" href="../membership/membership.html">Membership Services Provider (MSP)</a>, which defines an organization by creating an MSP which is tied to a root CA certificate to identify that components and identities were created by the root CA. The channel configuration can then assign certain rights and permissions to the organization through a policy (which will give a particular organization, such as R1, the right to add new organizations to the channel). We don’t show MSPs on these diagrams, as they would clutter them up, but because they define organizations, they are very important.</p>
+<p>Secondly, we’ll see later how certificates issued by CAs are at the heart of the <a class="reference external" href="../glossary.html#transaction">transaction</a> generation and validation process. Specifically, X.509 certificates are used in client application <a class="reference external" href="../glossary.html#proposal">transaction proposals</a> and smart contract <a class="reference external" href="../glossary.html#response">transaction responses</a> to digitally sign <a class="reference external" href="../glossary.html#transaction">transactions</a>. Subsequently the network nodes who host copies of the ledger verify that transaction signatures are valid before accepting transactions onto the ledger.</p>
+</section>
+</section>
+<section id="join-nodes-to-the-channel">
+<h2>Join nodes to the channel<a class="headerlink" href="#join-nodes-to-the-channel" title="Link to this heading">¶</a></h2>
+<p>Peers are a fundamental element of the network because they host ledgers and chaincode (which contain smart contracts) and are therefore one of the physical points at which organizations that transact on a channel connect to the channel (the other being an application). A peer can belong to as many channels as an organizations deems appropriate (depending on factors like the processing limitations of the peer pod and data residency rules that exist in a particular country). For more information about peers, check out <a class="reference external" href="../peers/peers.html">Peers</a>.</p>
+<p>The ordering service, on the other hand, gathers endorsed transactions from applications and orders them into transaction blocks, which are subsequently distributed to every peer node in the channel. At each of these committing peers, transactions are recorded and the local copy of the ledger updated appropriately. An ordering service is unique to a particular channel, with the nodes servicing that channel also known as a “consenter set”. Even if a node (or group of nodes) services multiple channels, each channel’s ordering service is considered to be a distinct instance of the ordering service. For more information about the ordering service, check out <a class="reference external" href="../orderer/ordering_service.html">The Ordering Service</a>.</p>
+<p><strong>For information about how to create peer and ordering nodes, check out <a class="reference external" href="../deployment_guide_overview.html">Deploying a production network</a>.</strong></p>
+<p>Because R1, R2, and R0 are listed in the channel configuration, they are allowed to join peers (in the case of R1 and R2) or ordering nodes (in the case of R0) to the channel.</p>
+<p><img alt="network.3" src="../_images/network.diagram.3.png" /></p>
+<p>R1’s peer, P1, and R2’s peer, P2, along with R0’s ordering service, O, join the channel through the process described in the <a class="reference external" href="../create_channel/create_channel_participation.html">Create a channel</a> tutorial. Note that while only one ordering node, 1, is joined to this channel, in a production scenario, an ordering service should contain at least three nodes. For the purposes of this topic, however, it is more important to conceptualize the interactions of the ordering service and the other components of the network than it is to understand how the needs of high availability impact configuration decisions. The nodes belonging to each organization have x.509 certificates created for them by the Certificate Authority associated with that organization. P1’s certificates are created by CA1, P2’s certificates are created by CA2, and so on.</p>
+<p>Every node in the channel stores a copy of the ledger of the channel, L1, which will be updated with each new block (note that the ordering service only contains the blockchain portion of a ledger and not the <a class="reference external" href="../glossary.html#state-database">state database</a>). Because of this, we can think of L1 as being <strong>physically hosted</strong> on P1, but <strong>logically hosted</strong> on the channel C1. The best practice is for R1 and R2 to make their peers, P1 and P2, <a class="reference external" href="../glossary.html#anchor-peer">anchor peers</a>, as this will bootstrap communication on the network between R1 and R2.</p>
+<p>After the ordering service has been joined to the channel, it is possible to propose and commit updates to the channel configuration, but little else. Next, you must install, approve, and commit a chaincode on a channel.</p>
+</section>
+<section id="install-approve-and-commit-a-chaincode">
+<h2>Install, approve, and commit a chaincode<a class="headerlink" href="#install-approve-and-commit-a-chaincode" title="Link to this heading">¶</a></h2>
+<p>Chaincodes are installed on peers, and then defined and committed on a channel:</p>
+<p><img alt="network.4" src="../_images/network.diagram.4.png" /></p>
+<p>In Fabric, the business logic that defines how peer organizations interact with the ledger (for example, a transaction that changes the ownership of an asset), is contained in a smart contract. The structure that contains the smart contract, called chaincode, is installed on the relevant peers, approved by the relevant peer organizations, and committed on the channel. In this way, you can consider a chaincode to be <strong>physically hosted</strong> on a peer but <strong>logically hosted</strong> on a channel. In our example, the chaincode, S5, is installed on every peer, even though organizations are not required to install every chaincode. Note that the ordering service does not have the chaincode installed on it, as ordering nodes do not typically propose transactions. The process of installing, approving, and committing a chaincode is known as the “lifecycle” of the chaincode. For more information, check out <a class="reference external" href="../chaincode_lifecycle.html">Fabric chaincode lifecycle</a>.</p>
+<p>The most important piece of information supplied within the chaincode definition is the <a class="reference external" href="../glossary.html#endorsement-policy">endorsement policy</a>. It describes which organizations must endorse transactions before they will be accepted by other organizations onto their copy of the ledger. An endorsement policy can be set to any combination of members in a channel, depending on the use case. If an endorsement policy is not set, it is inherited from the default endorsement policy specified in the channel configuration.</p>
+<p>Note that while some chaincodes include the ability to create <a class="reference external" href="../private_data_tutorial.html">private data transactions</a> between members on a channel, private data is outside the scope of this topic.</p>
+<p>While it’s now technically possible to drive transactions using the peer CLI, the best practice is to create an application and use it to invoke transactions on your chaincode.</p>
+</section>
+<section id="using-an-application-on-the-channel">
+<h2>Using an application on the channel<a class="headerlink" href="#using-an-application-on-the-channel" title="Link to this heading">¶</a></h2>
+<p>After a smart contract has been committed, client applications can be used to invoke transactions on a chaincode, via the Fabric Gateway service (the gateway). This completes the structure we showed in the first image:</p>
+<p><img alt="network.1" src="../_images/network.diagram.1.png" /></p>
+<p>Just like peers and orderers, a client application has an identity that associates it with an organization. In our example, client application A1 is associated with organization R1 and is connected to C1.</p>
+<p>Starting in Fabric v2.4, the client application (developed using a Gateway SDK v1.x) makes a gRPC connection to the gateway service, which then handles the transaction proposal and endorsement process on behalf of the application. The transaction proposal serves as input to the chaincode, which uses it to generate a transaction response.</p>
+<p>We can see that our peer organizations, R1 and R2, are fully participating in the channel. Their applications can access the ledger L1 via smart contract S5 to generate transactions that will be endorsed by the organizations specified in the endorsement policy and written to the ledger.</p>
+<p>Note: Fabric v2.3 SDKs embed the logic of the v2.4 Fabric Gateway service in the client application — refer to the <a class="reference external" href="https://hyperledger-fabric.readthedocs.io/en/release-2.3/peers/peers.html#applications-and-peers">v2.3 Applications and Peers</a> topic for details.</p>
+<p>For more information about how to develop an application, check out <a class="reference external" href="../developapps/developing_applications.html">Developing applications</a>.</p>
+</section>
+<section id="joining-components-to-multiple-channels">
+<h2>Joining components to multiple channels<a class="headerlink" href="#joining-components-to-multiple-channels" title="Link to this heading">¶</a></h2>
+<p>Now that we have showed the process for how a channel is created, as well as the nature of the high level interactions between organizations, nodes, policies, chaincodes, and applications, let’s expand our view by adding a new organization and a new channel to our scenario. To show how Fabric components can be joined to multiple channels, we’ll join R2 and its peer, P2, to the new channel, while R1 and P1 will not be joined.</p>
+<section id="creating-the-new-channel-configuration">
+<h3>Creating the new channel configuration<a class="headerlink" href="#creating-the-new-channel-configuration" title="Link to this heading">¶</a></h3>
+<p>As we’ve seen, the first step in creating a channel is to create its configuration. This channel will include not just R2 and R0, but a new organization, R3, which has had its identities and certificates created for it by CA3. R1 will have no rights over this channel and will not be able to join components to it. In fact, it has no way to know it even exists!</p>
+<p><img alt="network.5" src="../_images/network.diagram.5.png" /></p>
+<p>As before, now that the channel configuration, CC2, has been created, the channel can be said to <strong>logically</strong> exist, even though no components are joined to it.</p>
+<p>So let’s join some components to it!</p>
+</section>
+<section id="join-components-to-the-new-channel">
+<h3>Join components to the new channel<a class="headerlink" href="#join-components-to-the-new-channel" title="Link to this heading">¶</a></h3>
+<p>Just as we did with C1, let’s join our components to C2. Because we already showed how all channels have a ledger and how chaincodes are installed on peers and committed to a channel (in this case, the chaincode is called S6), we’ll skip those steps for now to show the end state of C2. Note that this channel has its own ledger, L2, which is completely separate from the ledger of C1. That’s because even though R2 (and its peer, P2) are joined to both channels, the two channels are entirely separate administrative domains.</p>
+<p><img alt="network.6" src="../_images/network.diagram.6.png" /></p>
+<p>Note that while both C1 and C2 both have the same orderer organization joined to it, R0, different ordering nodes are servicing each channel. This is not a mandatory configuration because even if the same ordering nodes are joined to multiple channels, each channel has a separate instance of the ordering service, and is more common in channels in which multiple orderer organizations come together to contribute nodes to an ordering service. Note that only the ordering node joined to a particular channel has the ledger of that channel.</p>
+<p>While it would also be possible for R2 to deploy a new peer to join to channel C2, in this case they have chosen to deploy the P2 to C2. Note that P2 has both the ledger of C1 (called L1) and the ledger of C2 (called L2) on its file system. Similarly, R2 has chosen to modify its application, A2, to be able to be used with C2, while R3’s application, A3, is being used with C2.</p>
+<p>Logically, this is all very similar to the creation of C1. Two peer organizations come together with an ordering organization to create a channel and join components and a chaincode to it.</p>
+<p>Think about this configuration from the standpoint of R2, which is joined to both channels. From their perspective, they might think about both C1 and C2, as well as the components they have joined to both, as the “network”, even though both channels are distinct from each other. In this sense, a “network” can also be seen as existing within the perspective of a particular organization as “all of the channels I am a member of and all of the components I own”.</p>
+<p>Now that we have shown how organizations and their components can be joined to multiple channels, let’s talk about how an organization and its components are added to an existing channel.</p>
+</section>
+</section>
+<section id="adding-an-organization-to-an-existing-channel">
+<h2>Adding an organization to an existing channel<a class="headerlink" href="#adding-an-organization-to-an-existing-channel" title="Link to this heading">¶</a></h2>
+<p>As channels mature, it is natural that its configuration will also mature, reflecting changes in the world that must be reflected in the channel. One of the more common ways a channel will be modified is to add new organizations to it. While it also possible to add more orderer organizations (who may or may not contribute their own nodes), in this example we’ll describe the process of how a peer organization, R3, is added to the channel configuration CC1 of channel C1.</p>
+<p><strong>Note that rights and permissions are defined at a channel level. Just because an organization is an administrator of one channel does not mean it will be an administrator of a different channel. Each channel is a distinct administrative zone and fully customizable to the use case it’s serving.</strong></p>
+<p><img alt="network.7" src="../_images/network.diagram.7.png" /></p>
+<p>Although the update to the diagram looks like one simple step, adding a new organization to a channel is, at a high level, a three step process:</p>
+<ol class="arabic simple">
+<li><p>Decide on the new organization’s permissions and role. The full scope of these rights must be agreed to before R3 is added to C1 and is beyond the scope of this topic, but comprise the same kinds of questions that must be answered when creating a channel in the first place. What kind of permissions and rights will R3 have on C1? Will it be an admin on the channel? Will its access to any channel resources be restricted (for example, R3 might only be able to write to C1, which means it can propose changes but not sign them)? What chaincodes will R3 install on its peers?</p></li>
+<li><p>Update the channel, including the relevant chaincodes, to reflect these decisions.</p></li>
+<li><p>The organization joins its peer nodes (and potentially ordering nodes) to the channel and begins participating.</p></li>
+</ol>
+<p>In this topic, we’ll assume that R3 will join C1 with the same rights and status enjoyed by R1 and R2. Similarly, R3 will also be joined as an endorser of the S5 chaincode, which means that R1 or R2 must redefine S5 (specifically, the endorsement policy section of the chaincode definition) and approve it on the channel.</p>
+<p>Updating the channel configuration creates a new configuration block, CC1.1, which will serve as the channel configuration until it is updated again. Note that even though the configuration has changed, the channel still exists and P1 and P2 are still joined to it. There is no need to re-add organizations or peers to the channel.</p>
+<p>For more information about the process of adding an organization to a channel, check out <a class="reference external" href="../channel_update_tutorial.html">Adding an org to a channel</a>.</p>
+<p>For more information about policies (which define the roles organizations have on a channel), check out <a class="reference external" href="../policies/policies.html">Policies</a>.</p>
+<p>For more information about upgrading a chaincode, check out <a class="reference external" href="../chaincode_lifecycle.html#upgrade-a-chaincode">Upgrade a chaincode</a>.</p>
+<section id="adding-existing-components-to-the-newly-joined-channel">
+<h3>Adding existing components to the newly joined channel<a class="headerlink" href="#adding-existing-components-to-the-newly-joined-channel" title="Link to this heading">¶</a></h3>
+<p>Now that R3 is able to fully participate in channel C1, it can add its components to the channel. Rather than do this one component at a time, let’s show how its peer, its local copy of a ledger, a smart contract and a client application can be joined all at once!</p>
+<p><img alt="network.8" src="../_images/network.diagram.8.png" /></p>
+<p>In this example, R3 adds P3, which was previously joined to C2, to C1. When it does this, P3 pulls C1’s ledger, L1. As we mentioned in the previous section, R3 has been added to C1 with equivalent rights as R1 and R2. Similarly, because the chaincode S5 was redefined and reapproved on the channel to include R3, R3 can now install S5 and begin transacting. Just as R2 modified its application A2 to be able to be used with channel C2, A3 is also now able to invoke transactions on C1.</p>
+</section>
+</section>
+<section id="network-recap">
+<h2>Network recap<a class="headerlink" href="#network-recap" title="Link to this heading">¶</a></h2>
+<p>We’ve covered a lot of ground in this topic. We’ve gone from a simple configuration with two organizations transacting on a single channel to multiple organizations transacting on multiple channels as well as the process for joining an organization to a channel that already exists.</p>
+<p>While this topic represents a relatively simple case, there are endless combinations of sophisticated topologies which are possible to achieve in Fabric, supporting an endless number of operational goals, and no theoretical limit to how big a network can get. The careful use of network and channel policies allow even large networks to be well-governed.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../identity/identity.html" class="btn btn-neutral float-right" title="Identity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../fabric_model.html" class="btn btn-neutral" title="Hyperledger Fabric Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Hyperledger 2020-2023.
+    <br>
+      <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+        <img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

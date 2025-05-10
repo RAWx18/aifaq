@@ -3,4 +3,5 @@ export interface Message {
 	type: 0 | 1;
 	id: string;
 	content: string;
+	metadata?: any; // For multi-agent response metadata
 }

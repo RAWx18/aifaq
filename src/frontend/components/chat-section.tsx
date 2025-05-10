@@ -34,7 +34,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
 							/>
 						) : (
 							<ChatResponse
-								response={message.content}
+								message={message}
 							/>
 						)}
 					</div>
