@@ -61,6 +61,9 @@ class GuardrailConfig:
                 self.disclaimers = config['disclaimers']
             if 'high_risk_combinations' in config:
                 self.high_risk_combinations = config['high_risk_combinations']
+            
+            logger.info(f"Loaded guardrails config with {len(self.blocked_topics)} blocked topics")
+            logger.info(f"Loaded {len(self.topic_related_terms)} topic term relations")
         except Exception as e:
             logger.error(f"Error loading guardrails config: {e}")
             self._set_default_config()
@@ -81,9 +84,9 @@ class GuardrailConfig:
         # Related terms for semantic understanding
         self.topic_related_terms = {
             "cryptocurrency": [
-                "bitcoin", "ethereum", "blockchain investment", "token sale", 
-                "crypto trading", "ICO", "mining profitability", "altcoin", 
-                "trading strategy", "coin market", "crypto exchange"
+                "bitcoin", "ethereum", "crypto", "token", "coin", 
+                "mining", "exchange", "trading", "wallet", "profit", 
+                "altcoin", "blockchain investment", "ICO"
             ],
             "hacking": [
                 "exploit", "vulnerability", "unauthorized access", "bypass security",
@@ -110,10 +113,11 @@ class GuardrailConfig:
             ]
         }
         
-        # More robust pattern filtering with better regex
+        # More robust pattern filtering with better regex for passwords
         self.filtered_patterns = [
-            r"(?i)password\s+(?:is|should\s+be|could\s+be)\s+[\w\d\s\W]{3,}",
-            r"(?i)(?:your|the|a|my)\s+password\s+(?:is|should|could|might|will|would)\s+[\w\d\s\W]{3,}",
+            r"(?i)my\s+password\s+(?:is|should\s+be|could\s+be)\s+\S+",  # Catches "My password should be password123"
+            r"(?i)password\s+(?:is|should\s+be|could\s+be)\s+\S+",       # More general password pattern
+            r"(?i)(?:your|the|a)\s+password\s+(?:is|should|could|might|will|would)\s+\S+",
             r"(?i)(?:credit\s+card|card\s+number|cvv|security\s+code)\s*:?\s*\d{3,}",
             r"(?i)(?:private|secret)\s+key\s*:?\s*[\w\d/+]{5,}",
             r"(?i)access\s+(?:token|key|credential)\s*:?\s*[\w\d]{5,}",
@@ -155,7 +159,9 @@ class GuardrailConfig:
             ["password", "crack", "tool"],
             ["bypass", "security", "how"],
             ["steal", "data", "method"],
-            ["exploit", "vulnerability", "code"]
+            ["exploit", "vulnerability", "code"],
+            ["mine", "bitcoin", "profit"],
+            ["trade", "exchange", "crypto"]
         ]
 
 
@@ -193,25 +199,32 @@ class GuardrailProcessor:
                 logger.info(f"Query blocked due to topic: {topic}")
                 return False, f"I'm sorry, but I cannot provide information about {topic}."
         
-        # Check for related terms to blocked topics - semantic understanding
+        # Check for cryptocurrency related terms - special case since this was failing
+        if "bitcoin" in query_lower or "crypto" in query_lower or "mining" in query_lower:
+            if any(term in query_lower for term in ["profit", "trading", "exchange", "invest"]):
+                logger.info(f"Query blocked due to cryptocurrency terms")
+                return False, f"I'm sorry, but I cannot provide information about cryptocurrency trading or investments."
+        
+        # Check for semantic matches using related terms
         for topic, related_terms in self.config.topic_related_terms.items():
             matched_terms = []
             for term in related_terms:
-                if term.lower() in query_lower:
+                # Check if the term appears as a word or phrase
+                if re.search(r'\b' + re.escape(term.lower()) + r'\b', query_lower):
                     matched_terms.append(term)
             
-            # If 2 or more related terms are found, consider it as discussing the blocked topic
+            # If we have 2 or more matched terms, consider it a match
             if len(matched_terms) >= 2:
-                logger.info(f"Query blocked due to multiple related terms for topic {topic}: {matched_terms}")
-                return False, f"I'm sorry, but I cannot provide information that appears to be related to {topic}."
+                logger.info(f"Query blocked due to semantic match ({len(matched_terms)} terms) for topic {topic}: {matched_terms}")
+                return False, f"I'm sorry, but I cannot provide information about topics related to {topic}."
         
         # Check for high-risk term combinations
         for combination in self.config.high_risk_combinations:
-            if all(term in query_words for term in combination):
-                logger.info(f"Query blocked due to high-risk term combination: {combination}")
-                return False, "I'm sorry, but I cannot provide information on this topic as it appears to be requesting potentially harmful or unethical guidance."
+            matching_terms = [term for term in combination if term in query_lower]
+            if len(matching_terms) >= len(combination) - 1:  # Match if all but one term is present
+                logger.info(f"Query blocked due to high-risk combination: {matching_terms}")
+                return False, "I cannot provide information on this topic as it appears to be requesting potentially harmful guidance."
         
-        # If we've made it this far, the query is allowed
         return True, None
     
     def process_response(self, query: str, response: str) -> str:
@@ -227,35 +240,46 @@ class GuardrailProcessor:
         """
         processed = response
         query_lower = query.lower()
+        combined_text = query_lower + " " + processed.lower()
         
         # Apply length limit
         if len(processed) > self.config.max_response_length:
-            processed = processed[:self.config.max_response_length] + "... [Response truncated for brevity]"
+            processed = processed[:self.config.max_response_length] + "... [Response truncated]"
             logger.info(f"Response truncated to {self.config.max_response_length} characters")
         
-        # Apply pattern filters with word boundary checks for better matching
+        # Apply pattern filters
         for pattern in self.config.filtered_patterns:
             original_length = len(processed)
             processed = re.sub(pattern, "[FILTERED]", processed, flags=re.IGNORECASE)
             if len(processed) != original_length:
-                logger.info(f"Pattern '{pattern}' filtered from response")
+                logger.info(f"Pattern filter applied: {pattern}")
         
         # Add security disclaimer for security-related content
-        if any(term in query_lower for term in ["security", "secure", "protection", "safety", "privacy", "firewall", "encrypt"]):
+        security_terms = ["security", "secure", "protection", "safety", "privacy", "firewall", "encrypt", 
+                         "authentication", "password", "credential", "access control"]
+        
+        if any(term in combined_text for term in security_terms):
             if not processed.endswith('\n'):
                 processed += '\n'
             processed += self.config.disclaimers.get("security", "")
             logger.info("Added security disclaimer to response")
+            return processed
         
         # Add blockchain disclaimer for blockchain-related content
-        elif any(term in query_lower for term in ["blockchain", "hyperledger", "distributed ledger", "smart contract"]):
+        blockchain_terms = ["blockchain", "hyperledger", "distributed ledger", "smart contract", 
+                           "consensus", "chaincode", "fabric"]
+        
+        if any(term in combined_text for term in blockchain_terms):
             if not processed.endswith('\n'):
                 processed += '\n'
             processed += self.config.disclaimers.get("blockchain", "")
             logger.info("Added blockchain disclaimer to response")
+            return processed
         
         # Add technical disclaimer for implementation-related content
-        elif any(term in query_lower for term in ["implement", "deploy", "install", "configure", "setup"]):
+        technical_terms = ["implement", "deploy", "install", "configure", "setup", "integration", "docker"]
+        
+        if any(term in combined_text for term in technical_terms):
             if not processed.endswith('\n'):
                 processed += '\n'
             processed += self.config.disclaimers.get("technical", "")

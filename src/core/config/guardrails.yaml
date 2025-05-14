@@ -1,6 +1,6 @@
 # Enhanced Guardrails configuration for AIFAQ
 
-# Topics to avoid in responses (can be customized by administrators)
+# Topics to avoid in responses
 blocked_topics:
   - "new_topic"
   - "cryptocurrency"
@@ -17,13 +17,16 @@ topic_related_terms:
     - "ethereum"
     - "blockchain investment"
     - "token sale"
-    - "crypto trading"
+    - "crypto"
     - "ICO"
-    - "mining profitability"
+    - "mining"
     - "altcoin"
-    - "trading strategy"
-    - "coin market"
-    - "crypto exchange"
+    - "trading"
+    - "exchange"
+    - "coin"
+    - "token"
+    - "wallet"
+    - "profit"
   "hacking":
     - "exploit"
     - "vulnerability"
@@ -31,23 +34,22 @@ topic_related_terms:
     - "bypass security"
     - "crack password"
     - "penetration testing"
-    - "exploit code"
     - "backdoor"
     - "security breach"
     - "break into"
-    - "infiltrate system"
-    - "circumvent protection"
+    - "infiltrate"
+    - "circumvent"
   "illegal activities":
     - "black market"
     - "smuggling"
     - "theft"
-    - "fraud scheme"
+    - "fraud"
     - "money laundering"
     - "illegal download"
     - "counterfeit"
     - "unauthorized copying"
     - "piracy"
-    - "unlawful access"
+    - "unlawful"
     - "stealing"
     - "illicit"
   "personal data extraction":
@@ -74,22 +76,23 @@ topic_related_terms:
     - "hate speech"
   "harmful content":
     - "self-harm"
-    - "suicide method"
+    - "suicide"
     - "dangerous chemical"
-    - "weapon making"
+    - "weapon"
     - "explosives"
     - "harmful instructions"
     - "dangerous experiment"
 
 # Regular expressions to filter out from responses
 filtered_patterns:
-  - "(?i)password\\s+(?:is|should\\s+be|could\\s+be)\\s+[\\w\\d\\s\\W]{3,}"
-  - "(?i)(?:your|the|a|my)\\s+password\\s+(?:is|should|could|might|will|would)\\s+[\\w\\d\\s\\W]{3,}"
-  - "(?i)(?:credit\\s+card|card\\s+number|cvv|security\\s+code)\\s*:?\\s*\\d{3,}"
-  - "(?i)(?:private|secret)\\s+key\\s*:?\\s*[\\w\\d/+]{5,}"
-  - "(?i)access\\s+(?:token|key|credential)\\s*:?\\s*[\\w\\d]{5,}"
-  - "(?i)api\\s+(?:key|token|secret)\\s*:?\\s*[\\w\\d]{5,}"
-  - "(?i)(?:login|account)\\s+credential\\s*:?\\s*[\\w\\d]{3,}"
+  - "password\\s+(?:is|should\\s+be|could\\s+be|would\\s+be)\\s*\\S+"
+  - "my\\s+password\\s+is\\s*\\S+"
+  - "your\\s+password\\s+(?:is|should|could|might|will|would)\\s*\\S+"
+  - "(?:credit\\s+card|card\\s+number|cvv|security\\s+code)\\s*:?\\s*\\d{3,}"
+  - "(?:private|secret)\\s+key\\s*:?\\s*[\\w\\d/+]{5,}"
+  - "access\\s+(?:token|key|credential)\\s*:?\\s*[\\w\\d]{5,}"
+  - "api\\s+(?:key|token|secret)\\s*:?\\s*[\\w\\d]{5,}"
+  - "(?:login|account)\\s+credential\\s*:?\\s*[\\w\\d]{3,}"
 
 # Maximum response length in characters
 max_response_length: 300
@@ -120,10 +123,11 @@ disclaimers:
   "technical": "\n\nNote: Implementation details may vary based on your specific environment, software versions, and organizational requirements. Always test in a non-production environment first."
 
 # High-risk term combinations that should trigger blocking
-# If multiple terms from a combination appear in a query, it will be blocked
 high_risk_combinations:
   - ["hack", "tutorial", "step"]
   - ["password", "crack", "tool"]
   - ["bypass", "security", "how"]
   - ["steal", "data", "method"]
   - ["exploit", "vulnerability", "code"]
+  - ["mine", "bitcoin", "profit"]
+  - ["trade", "exchange", "crypto"]
