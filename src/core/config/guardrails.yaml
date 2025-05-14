@@ -1,0 +1,129 @@
+# Enhanced Guardrails configuration for AIFAQ
+
+# Topics to avoid in responses (can be customized by administrators)
+blocked_topics:
+  - "new_topic"
+  - "cryptocurrency"
+  - "hacking"
+  - "illegal activities"
+  - "personal data extraction"
+  - "discrimination"
+  - "harmful content"
+
+# Related terms for semantic understanding of topics
+topic_related_terms:
+  "cryptocurrency":
+    - "bitcoin"
+    - "ethereum"
+    - "blockchain investment"
+    - "token sale"
+    - "crypto trading"
+    - "ICO"
+    - "mining profitability"
+    - "altcoin"
+    - "trading strategy"
+    - "coin market"
+    - "crypto exchange"
+  "hacking":
+    - "exploit"
+    - "vulnerability"
+    - "unauthorized access"
+    - "bypass security"
+    - "crack password"
+    - "penetration testing"
+    - "exploit code"
+    - "backdoor"
+    - "security breach"
+    - "break into"
+    - "infiltrate system"
+    - "circumvent protection"
+  "illegal activities":
+    - "black market"
+    - "smuggling"
+    - "theft"
+    - "fraud scheme"
+    - "money laundering"
+    - "illegal download"
+    - "counterfeit"
+    - "unauthorized copying"
+    - "piracy"
+    - "unlawful access"
+    - "stealing"
+    - "illicit"
+  "personal data extraction":
+    - "dox"
+    - "personal information"
+    - "home address"
+    - "private details"
+    - "contact information"
+    - "email address"
+    - "phone number"
+    - "track someone"
+    - "locate person"
+    - "find someone"
+    - "personal profile"
+  "discrimination":
+    - "racial bias"
+    - "gender discrimination"
+    - "stereotype"
+    - "prejudice"
+    - "sexist"
+    - "racist"
+    - "discriminatory"
+    - "bias against"
+    - "hate speech"
+  "harmful content":
+    - "self-harm"
+    - "suicide method"
+    - "dangerous chemical"
+    - "weapon making"
+    - "explosives"
+    - "harmful instructions"
+    - "dangerous experiment"
+
+# Regular expressions to filter out from responses
+filtered_patterns:
+  - "(?i)password\\s+(?:is|should\\s+be|could\\s+be)\\s+[\\w\\d\\s\\W]{3,}"
+  - "(?i)(?:your|the|a|my)\\s+password\\s+(?:is|should|could|might|will|would)\\s+[\\w\\d\\s\\W]{3,}"
+  - "(?i)(?:credit\\s+card|card\\s+number|cvv|security\\s+code)\\s*:?\\s*\\d{3,}"
+  - "(?i)(?:private|secret)\\s+key\\s*:?\\s*[\\w\\d/+]{5,}"
+  - "(?i)access\\s+(?:token|key|credential)\\s*:?\\s*[\\w\\d]{5,}"
+  - "(?i)api\\s+(?:key|token|secret)\\s*:?\\s*[\\w\\d]{5,}"
+  - "(?i)(?:login|account)\\s+credential\\s*:?\\s*[\\w\\d]{3,}"
+
+# Maximum response length in characters
+max_response_length: 300
+
+# Whether to enable content safety checks
+enable_safety_checks: true
+
+# Custom responses for specific query patterns
+custom_responses:
+  "(?i).*\\b(?:how|can|ways?|method|technique|steps?)\\s+(?:to|for|of)?\\s*(?:hack|exploit|break|bypass|compromise).*": 
+    "I cannot provide information about hacking, exploiting vulnerabilities, or unauthorized system access. Instead, I recommend exploring secure development practices and ethical cybersecurity resources if you're interested in security topics."
+  
+  "(?i).*(?:what|recommend|suggest|tell\\s+me|give\\s+me).*\\b(?:password|credentials).*": 
+    "For security reasons, I cannot provide specific password recommendations or discuss credential management specifics. Please refer to your organization's security policies or consult trusted security frameworks like NIST for best practices on credential management."
+  
+  "(?i).*(?:how|ways?|method|steps?)\\s+(?:to|for|of)?\\s*(?:avoid|bypass|trick|fool|get\\s+around|circumvent)\\s+(?:detection|security|authentication|verification|validation).*":
+    "I cannot provide information on bypassing security measures or authentication systems. This kind of activity could be illegal and unethical. Instead, I'd be happy to discuss proper security implementation or legitimate troubleshooting approaches."
+  
+  "(?i).*(?:how|can|ways?)\\s+(?:to|for|of)?\\s*(?:steal|obtain|get|extract)\\s+(?:data|information|credentials|password|key).*":
+    "I cannot provide guidance on extracting data or credentials without authorization. Such activities are potentially illegal and unethical. I can instead discuss proper data access methods, API usage, or legitimate data integration approaches."
+
+# Disclaimers to add to responses when discussing sensitive topics
+disclaimers:
+  "security": "\n\nNote: This information is provided for educational purposes only. Always follow your organization's security policies, consult with security professionals, and ensure compliance with relevant regulations when implementing security measures."
+  
+  "blockchain": "\n\nNote: The blockchain technology landscape evolves rapidly. This information may change over time, and you should verify it against current documentation for your specific platform version."
+  
+  "technical": "\n\nNote: Implementation details may vary based on your specific environment, software versions, and organizational requirements. Always test in a non-production environment first."
+
+# High-risk term combinations that should trigger blocking
+# If multiple terms from a combination appear in a query, it will be blocked
+high_risk_combinations:
+  - ["hack", "tutorial", "step"]
+  - ["password", "crack", "tool"]
+  - ["bypass", "security", "how"]
+  - ["steal", "data", "method"]
+  - ["exploit", "vulnerability", "code"]
