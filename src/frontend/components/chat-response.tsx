@@ -19,8 +19,14 @@ const ChatResponse = ({ message }: Props) => (
 				<p> {message.content} </p>
 			</div>
 			<div className="mt-4">
-				<ChatResponseOptions text={message.content} />
-				{message.metadata && <MultiAgentInfo metadata={message.metadata} />}
+				<ChatResponseOptions
+					text={message.content}
+				/>
+				{message.metadata && (
+					<MultiAgentInfo
+						metadata={message.metadata}
+					/>
+				)}
 			</div>
 		</div>
 	</div>

@@ -78,13 +78,13 @@ const ChatBottomBar = ({ onSend }: Props) => {
 				.then((value) => {
 					if (value !== undefined) {
 						onSend(updatedMessage);
-						
+
 						// Create response message with metadata if available
 						const responseMessage = {
 							...value.message,
 							metadata: value.metadata || null
 						};
-						
+
 						onSend(responseMessage);
 					}
 				})
