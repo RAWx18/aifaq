@@ -9,6 +9,7 @@ from utils import load_yaml_file
 from session_history import get_session_history
 from guardrails import GuardrailProcessor, GuardrailConfig
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,14 +23,15 @@ def initialize_models():
     tokenizer = AutoTokenizer.from_pretrained(config_data["model_name"])
     embeddings = HuggingFaceEmbeddings(model_name=config_data["embedding_model_name"])
     
-    persist_directory = config_data.get("persist_directory", "chromadb")
+    # Use the correct path for ChromaDB - hardcoded to ensure it works
+    chroma_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chromadb")
+    logger.info(f"Using ChromaDB path: {chroma_path}")
     
     # Ensure directory exists
-    import os
-    os.makedirs(persist_directory, exist_ok=True)
+    os.makedirs(chroma_path, exist_ok=True)
     
     vectordb = Chroma(
-        persist_directory=persist_directory,
+        persist_directory=chroma_path,
         embedding_function=embeddings
     )
     
@@ -39,15 +41,37 @@ def initialize_models():
     
     return model, tokenizer, vectordb, initialize_models._guardrails
 
-def initialize_guardrails(config_path="config/guardrails.yaml"):
-    """Initialize the guardrails processor."""
+def initialize_guardrails(config_path=None):
+    """Initialize the guardrails processor with optional custom config path."""
     config = GuardrailConfig()
-    try:
-        config.load_from_file(config_path)
-        logger.info(f"Loaded guardrails configuration from {config_path}")
-    except FileNotFoundError:
-        logger.warning(f"Guardrails config file not found at {config_path}. Using default configuration.")
-        config._set_default_config()
+    if config_path:
+        try:
+            config.load_from_file(config_path)
+            logger.info(f"Loaded guardrails configuration from {config_path}")
+        except FileNotFoundError:
+            logger.warning(f"Guardrails config file not found at {config_path}. Using default configuration.")
+            config._set_default_config()
+    else:
+        # Try to load from default locations
+        default_paths = [
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "config/guardrails.yaml"),
+            "config/guardrails.yaml",  # Relative path
+            "src/core/config/guardrails.yaml"  # Another common path
+        ]
+        
+        config_loaded = False
+        for path in default_paths:
+            try:
+                config.load_from_file(path)
+                logger.info(f"Loaded guardrails configuration from {path}")
+                config_loaded = True
+                break
+            except FileNotFoundError:
+                continue
+        
+        if not config_loaded:
+            logger.warning("No guardrails config file found. Using default configuration.")
+            config._set_default_config()
     
     logger.info(f"Guardrails initialized with blocked topics: {config.blocked_topics}")
     logger.info(f"Max response length: {config.max_response_length}")
@@ -61,6 +85,7 @@ def retrieve_relevant_context(query, vectordb, top_k=3):
         logger.info(f"Retrieved {len(results)} documents for query: {query}")
         
         if not results:
+            logger.warning(f"No documents found for query: {query}")
             return "No relevant documents were found in the knowledge base."
         
         context = "\n\n".join([doc.page_content for doc in results])
@@ -71,12 +96,15 @@ def retrieve_relevant_context(query, vectordb, top_k=3):
 
 def generate_response(session_id, model, tokenizer, query, vectordb):
     """Generate a response with guardrails applied."""
-    # Use the singleton guardrails instance
+    # Always use the singleton guardrails instance
+    if not hasattr(initialize_models, '_guardrails'):
+        initialize_models._guardrails = initialize_guardrails()
     guardrails_processor = initialize_models._guardrails
     
-    # Apply guardrails to the query
+    # Apply guardrails to the query first
     should_process, custom_response = guardrails_processor.check_query(query)
     if not should_process:
+        logger.info(f"Query blocked by guardrails: {query}")
         conversation_history = get_session_history(session_id)
         conversation_history.add_user_message(query)
         conversation_history.add_ai_message(custom_response)
@@ -84,6 +112,7 @@ def generate_response(session_id, model, tokenizer, query, vectordb):
     
     conversation_history = get_session_history(session_id)
     context = retrieve_relevant_context(query, vectordb)
+    logger.info(f"Retrieved context length: {len(context)}")
 
     qa_system_prompt = """You are a concise assistant for question-answering tasks. \
     Use the following pieces of retrieved context to answer the question. \
@@ -107,7 +136,8 @@ def generate_response(session_id, model, tokenizer, query, vectordb):
     response = ""
     for token in streamer:
         response += token
-        print(token)
+        print(token, end="", flush=True)
+    print()
     
     # Apply guardrails to the generated response
     processed_response = guardrails_processor.process_response(query, response)
